@@ -1,0 +1,18 @@
+{
+  "builds": [
+    {
+      "src": "api/bot.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "regions": [
+    "iad1"
+  ],
+  "routes": [
+    {
+      "dest": "/api/bot.js",
+      "src": "/api/bot"
+    }
+  ],
+  "version": 2
+}
