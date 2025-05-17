@@ -3,12 +3,10 @@
 The following commands are available:
 /btc - Bitcoin (BTC)
 /eth - Ethereum (ETH)
-/usdt - Tether (USDT)
 /bnb - BNB (BNB)
 /sol - Solana (SOL)
 /steth - Lido Staked Ether (STETH)
 /xrp - XRP (XRP)
-/usdc - USD Coin (USDC)
 /doge - Dogecoin (DOGE)
 /ton - Toncoin (TON)
 /ada - Cardano (ADA)
@@ -31,5 +29,6 @@ The following commands are available:
 /okb - OKB (OKB)
 /cro - Cronos (CRO)
 /imx - Immutable (IMX)
+/pepe - Pepe (PEPE)
 
 Type any command above (with a slash, e.g. /btc) to get the latest information for that cryptocurrency.

@@ -1,12 +1,10 @@
 const cryptoList = [
   { command: 'btc', symbol: 'BTC', name: 'Bitcoin (BTC)' },
   { command: 'eth', symbol: 'ETH', name: 'Ethereum (ETH)' },
-  { command: 'usdt', symbol: 'USDT', name: 'Tether (USDT)' },
   { command: 'bnb', symbol: 'BNB', name: 'BNB (BNB)' },
   { command: 'sol', symbol: 'SOL', name: 'Solana (SOL)' },
   { command: 'steth', symbol: 'STETH', name: 'Lido Staked Ether (STETH)' },
   { command: 'xrp', symbol: 'XRP', name: 'XRP (XRP)' },
-  { command: 'usdc', symbol: 'USDC', name: 'USD Coin (USDC)' },
   { command: 'doge', symbol: 'DOGE', name: 'Dogecoin (DOGE)' },
   { command: 'ton', symbol: 'TON', name: 'Toncoin (TON)' },
   { command: 'ada', symbol: 'ADA', name: 'Cardano (ADA)' },
@@ -28,7 +26,8 @@ const cryptoList = [
   { command: 'fil', symbol: 'FIL', name: 'Filecoin (FIL)' },
   { command: 'okb', symbol: 'OKB', name: 'OKB (OKB)' },
   { command: 'cro', symbol: 'CRO', name: 'Cronos (CRO)' },
-  { command: 'imx', symbol: 'IMX', name: 'Immutable (IMX)' }
+  { command: 'imx', symbol: 'IMX', name: 'Immutable (IMX)' },
+  { command: 'pepe', symbol: 'PEPE', name: 'Pepe (PEPE)' },
 ];
 
 module.exports = { cryptoList }

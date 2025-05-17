@@ -1,7 +1,7 @@
 const apiKey = process.env.COINGECKO_API_KEY
 
-async function getCoinGeckoCoinList() {
-  const response = await fetch('https://api.coingecko.com/api/v3/coins/list', {
+async function getCoinGeckoCoinList(symbol) {
+  const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${symbol}`, {
     headers: {
       'x-cg-demo-api-key': apiKey
     }
@@ -11,14 +11,9 @@ async function getCoinGeckoCoinList() {
 }
 
 async function chartHandler(symbol) {
-  const input = symbol.toLowerCase();
-
   try {
-    const coinList = await getCoinGeckoCoinList();
-    const coin =
-      coinList.find(c => c.symbol.toLowerCase() === input) ||
-      coinList.find(c => c.id === input) ||
-      coinList.find(c => c.name.toLowerCase() === input);
+    const { coins } = await getCoinGeckoCoinList(symbol);
+    const coin = coins.find(c => c.symbol === symbol);
 
     if (!coin) return;
 
@@ -31,7 +26,7 @@ async function chartHandler(symbol) {
     if (!response.ok) throw new Error('Coin not found');
     const data = await response.json();
 
-    const prices = data.prices.map(p => p[1]);
+    const prices = data.prices.map(p => p[1] >= 1 ? p[1].toFixed(2) : p[1]);
     const labels = data.prices.map(p => {
       const d = new Date(p[0]);
       const hour = d.getHours().toString().padStart(2, '0');
@@ -39,7 +34,7 @@ async function chartHandler(symbol) {
       return `${d.getDate()}/${d.getMonth() + 1} ${hour}:${min}`;
     });
 
-    const chartUrl = `https://quickchart.io/chart?width=1100&height=500&c=${encodeURIComponent(JSON.stringify({
+    const chartConfig = {
       type: 'line',
       data: {
         labels,
@@ -47,12 +42,12 @@ async function chartHandler(symbol) {
           label: `${coin.symbol ? coin.symbol.toUpperCase() : coin.id.toUpperCase()} Price (USD)`,
           data: prices,
           fill: true,
-          borderColor: 'rgba(54, 162, 235, 1)',
-          backgroundColor: 'rgba(54, 162, 235, 0.15)',
-          pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+          borderColor: 'rgb(228, 229, 159)',
+          backgroundColor: 'rgba(228, 229, 159, 0.15)',
+          pointBackgroundColor: 'rgb(243, 108, 45)',
           pointRadius: 2,
           borderWidth: 3,
-          tension: 0.4
+          tension: 0.4,
         }]
       },
       options: {
@@ -63,16 +58,10 @@ async function chartHandler(symbol) {
               color: '#fff',
               font: { size: 16, weight: 'bold' }
             }
-          },
-          title: {
-            display: true,
-            text: `${coin.name} Price Chart (7d)`,
-            color: '#fff',
-            font: { size: 22 }
           }
         },
         layout: {
-          padding: 30,
+          padding: 10,
           backgroundColor: '#181c25',
         },
         elements: {
@@ -88,8 +77,7 @@ async function chartHandler(symbol) {
               minRotation: 45,
               autoSkip: true,
               maxTicksLimit: 16
-            },
-            grid: { color: 'rgba(200,200,200,0.15)' }
+            }
           },
           y: {
             ticks: {
@@ -101,12 +89,13 @@ async function chartHandler(symbol) {
                 }
                 return value.toFixed(8).replace(/\.?0+$/, '');
               }
-            },
-            grid: { color: 'rgba(200,200,200,0.15)' }
+            }
           }
         }
       }
-    }))}`;
+    };
+
+    const chartUrl = `https://quickchart.io/chart?width=1100&height=500&backgroundColor=rgb(33,33,33)&c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
 
     return chartUrl
   } catch (err) {
