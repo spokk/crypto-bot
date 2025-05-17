@@ -4,7 +4,7 @@ const path = require('path');
 
 const { Telegraf } = require('telegraf');
 
-const { fetchCryptoQuote } = require('../utils/coinmarketcap');
+const { fetchCryptoQuote } = require('../utils/http');
 const { formatCryptoMessage } = require('../utils/format');
 const { registerCryptoCommandFactory } = require('../utils/registerCryptoCommand');
 

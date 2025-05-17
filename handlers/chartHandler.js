@@ -1,14 +1,6 @@
-const apiKey = process.env.COINGECKO_API_KEY
+const { getCoinGeckoCoinList } = require('../utils/http');
 
-async function getCoinGeckoCoinList(symbol) {
-  const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${symbol}`, {
-    headers: {
-      'x-cg-demo-api-key': apiKey
-    }
-  });
-  if (!response.ok) throw new Error('Failed to fetch CoinGecko coin list');
-  return await response.json();
-}
+const apiKey = process.env.COINGECKO_API_KEY
 
 async function chartHandler(symbol) {
   try {

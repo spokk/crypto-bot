@@ -17,4 +17,14 @@ async function fetchCryptoQuote(symbol) {
   return data.data[symbol].quote.USD;
 }
 
-module.exports = { fetchCryptoQuote };
+async function getCoinGeckoCoinList(symbol) {
+  const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${symbol}`, {
+    headers: {
+      'x-cg-demo-api-key': process.env.COINMARKETCAP_API_KEY
+    }
+  });
+  if (!response.ok) throw new Error('Failed to fetch CoinGecko coin list');
+  return await response.json();
+}
+
+module.exports = { fetchCryptoQuote, getCoinGeckoCoinList };
