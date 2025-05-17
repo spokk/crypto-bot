@@ -1,12 +1,19 @@
+const chartHandler = require('../handlers/chartHandler');
+
 function registerCryptoCommandFactory(bot, fetchCryptoQuote, formatCryptoMessage) {
   return (command, symbol, displayName) => {
     bot.command(command, async (ctx) => {
       ctx.deleteMessage(ctx.message.message_id).catch(() => { });
       try {
-        const apiKey = process.env.COINMARKETCAP_API_KEY;
-        const data = await fetchCryptoQuote(symbol, apiKey);
+        const data = await fetchCryptoQuote(symbol);
+        const chartUrl = await chartHandler(symbol);
         const message = formatCryptoMessage(displayName, data);
-        await ctx.reply(message, { disable_notification: true });
+        if (chartUrl) {
+          await ctx.replyWithPhoto(chartUrl, { caption: message, disable_notification: true });
+        } else {
+          await ctx.reply(message, { disable_notification: true });
+        }
+
       } catch (error) {
         console.error(`Помилка при отриманні даних для ${symbol}:`, error);
       }
