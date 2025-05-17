@@ -1,4 +1,4 @@
-const chartHandler = require('../handlers/chartHandler');
+const { chartHandler } = require('../handlers/chartHandler');
 
 function registerCryptoCommandFactory(bot, fetchCryptoQuote, formatCryptoMessage) {
   return (command, symbol, displayName) => {

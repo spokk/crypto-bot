@@ -20,11 +20,26 @@ async function fetchCryptoQuote(symbol) {
 async function getCoinGeckoCoinList(symbol) {
   const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${symbol}`, {
     headers: {
-      'x-cg-demo-api-key': process.env.COINMARKETCAP_API_KEY
+      'x-cg-demo-api-key': process.env.COINGECKO_API_KEY,
     }
   });
   if (!response.ok) throw new Error('Failed to fetch CoinGecko coin list');
   return await response.json();
 }
 
-module.exports = { fetchCryptoQuote, getCoinGeckoCoinList };
+async function fetchCoinGeckoMarketChart(coinId, days = 7, vsCurrency = 'usd') {
+  const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${vsCurrency}&days=${days}`;
+  const response = await fetch(url, {
+    headers: {
+      'x-cg-demo-api-key': process.env.COINGECKO_API_KEY,
+    }
+  });
+  if (!response.ok) throw new Error('Coin not found');
+  return await response.json();
+}
+
+module.exports = {
+  fetchCryptoQuote,
+  getCoinGeckoCoinList,
+  fetchCoinGeckoMarketChart,
+};
