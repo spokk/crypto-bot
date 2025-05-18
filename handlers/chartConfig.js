@@ -18,7 +18,7 @@ function getChartConfig(symbol, labels, prices) {
         legend: {
           display: true,
           labels: {
-            color: "#fff",
+            color: "rgb(255,255,255)",
             font: {
               size: 16,
               weight: 'bold'
@@ -27,8 +27,13 @@ function getChartConfig(symbol, labels, prices) {
         }
       },
       layout: {
-        padding: 8,
-        backgroundColor: '#181c25'
+        padding: {
+          left: 12,
+          right: 20,
+          top: 12,
+          bottom: 12
+        },
+        backgroundColor: 'rgb(24,28,37)'
       },
       elements: {
         line: { borderJoinStyle: 'round' },
@@ -37,7 +42,7 @@ function getChartConfig(symbol, labels, prices) {
       scales: {
         x: {
           ticks: {
-            color: "#fff",
+            color: "rgb(255,255,255)",
             font: { size: 13 },
             maxRotation: 45,
             minRotation: 30,
@@ -51,7 +56,7 @@ function getChartConfig(symbol, labels, prices) {
         },
         y: {
           ticks: {
-            color: "#fff",
+            color: "rgb(255,255,255)",
             font: {
               size: 15,
               weight: 'bold'
