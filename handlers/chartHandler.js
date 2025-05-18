@@ -29,7 +29,7 @@ async function chartHandler(symbol) {
       data: {
         labels,
         datasets: [{
-          label: `${symbol.toUpperCase()} Price (USD)`,
+          label: `${symbol.toUpperCase()} Price (USD). Last 7 days`,
           data: prices,
           fill: true,
           borderColor: 'rgb(228, 229, 159)',
@@ -67,13 +67,23 @@ async function chartHandler(symbol) {
               maxRotation: 45,
               minRotation: 30,
               autoSkip: true,
-              maxTicksLimit: 20
+              maxTicksLimit: 16,
+              showLastLabel: true
+            },
+            grid: {
+              color: 'rgba(255, 255, 255, 0.3)',
             }
           },
           y: {
             ticks: {
               color: "#fff",
-              font: { size: 14 }
+              font: {
+                size: 15,
+                weight: 'bold'
+              },
+            },
+            grid: {
+              color: 'rgba(255, 255, 255, 0.3)',
             }
           }
         }

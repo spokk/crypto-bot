@@ -3,8 +3,9 @@ function getChangeSymbol(value) {
   return value > 0 ? '🟢' : value < 0 ? '🔴' : '⚪';
 }
 
-function safeFixed(value, digits = 2) {
-  return typeof value === 'number' ? value.toFixed(digits) : 'N/A';
+function safeFixed(value) {
+  const val = value >= 1 ? Number(value).toFixed(2) : value
+  return typeof value === 'number' ? val : 'N/A';
 }
 
 function formatCryptoMessage(symbol, data) {
