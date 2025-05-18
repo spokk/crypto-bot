@@ -4,13 +4,13 @@ function getChartConfig(symbol, labels, prices) {
     data: {
       labels,
       datasets: [{
-        label: `${symbol.toUpperCase()} Price (USD). Last 7 days`,
+        label: `${symbol.toUpperCase()} price (USD) for the last 7 days.`,
         data: prices,
         fill: true,
         borderColor: 'rgb(228, 229, 159)',
         backgroundColor: 'rgba(228, 229, 159, 0.20)',
         borderWidth: 2,
-        tension: 0.4,
+        tension: 0.5,
       }]
     },
     options: {

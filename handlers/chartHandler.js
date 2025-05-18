@@ -13,11 +13,11 @@ async function chartHandler(symbol) {
     if (!coin) return;
 
     // Fetch market chart data
-    const data = await fetchCoinGeckoMarketChart(coin.id);
+    const chart = await fetchCoinGeckoMarketChart(coin.id);
 
-    // Prepare price and label arrays using utils
-    const prices = formatPrices(data.prices);
-    const labels = formatLabels(data.prices);
+    // Prepare price and label arrays
+    const prices = formatPrices(chart.prices);
+    const labels = formatLabels(chart.prices);
 
     // Get chart config from separate file
     const chartConfig = getChartConfig(symbol, labels, prices);
