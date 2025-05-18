@@ -19,8 +19,6 @@ async function chartHandler(symbol) {
     const prices = formatPrices(data.prices);
     const labels = formatLabels(data.prices);
 
-    console.log('Prices:', prices);
-
     // Get chart config from separate file
     const chartConfig = getChartConfig(symbol, labels, prices);
 
