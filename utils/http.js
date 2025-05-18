@@ -21,9 +21,11 @@ async function getCoinGeckoCoinList(symbol) {
   const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${symbol}`, {
     headers: {
       'x-cg-demo-api-key': process.env.COINGECKO_API_KEY,
+      'Accept': 'application/json'
     }
   });
   if (!response.ok) throw new Error('Failed to fetch CoinGecko coin list');
+
   return await response.json();
 }
 
@@ -32,9 +34,11 @@ async function fetchCoinGeckoMarketChart(coinId, days = 7, vsCurrency = 'usd') {
   const response = await fetch(url, {
     headers: {
       'x-cg-demo-api-key': process.env.COINGECKO_API_KEY,
+      'Accept': 'application/json'
     }
   });
   if (!response.ok) throw new Error('Coin not found');
+
   return await response.json();
 }
 

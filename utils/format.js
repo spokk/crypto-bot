@@ -3,17 +3,17 @@ function getChangeSymbol(value) {
   return value > 0 ? '🟢' : value < 0 ? '🔴' : '⚪';
 }
 
-function safeFixed(value) {
-  const val = value >= 1 ? Number(value).toFixed(2) : value
-  return typeof value === 'number' ? val : 'N/A';
+function safeFixed(value, digits = 2) {
+  if (typeof value !== 'number') return 'N/A';
+  return value >= 1 ? Number(value).toFixed(digits) : trimSmallNumber(value);
 }
 
 function formatCryptoMessage(symbol, data) {
   const price = safeFixed(data?.price);
-  const percentChange1h = safeFixed(data?.percent_change_1h);
-  const percentChange24h = safeFixed(data?.percent_change_24h);
-  const percentChange7d = safeFixed(data?.percent_change_7d);
-  const percentChange30d = safeFixed(data?.percent_change_30d);
+  const percentChange1h = Number(data?.percent_change_1h).toFixed(2);
+  const percentChange24h = Number(data?.percent_change_24h).toFixed(2);
+  const percentChange7d = Number(data?.percent_change_7d).toFixed(2);
+  const percentChange30d = Number(data?.percent_change_30d).toFixed(2);
 
   const changeSymbol1h = getChangeSymbol(data?.percent_change_1h);
   const changeSymbol24h = getChangeSymbol(data?.percent_change_24h);
@@ -42,4 +42,14 @@ function formatCryptoMessage(symbol, data) {
   );
 }
 
-module.exports = { formatCryptoMessage };
+function trimSmallNumber(num, maxDecimals = 8) {
+  if (typeof num !== 'number') return num;
+  if (num === 0) return "0";
+  // Convert to string with up to maxDecimals, remove trailing zeros
+  let str = num.toFixed(maxDecimals);
+  // Remove trailing zeros and possible trailing decimal point
+  str = str.replace(/\.?0+$/, '');
+  return str;
+}
+
+module.exports = { formatCryptoMessage, trimSmallNumber };
