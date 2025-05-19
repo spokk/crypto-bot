@@ -1,4 +1,4 @@
-async function fetchCryptoQuote(symbol) {
+export const fetchCryptoQuote = async (symbol) => {
   const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`;
   const response = await fetch(url, {
     method: 'GET',
@@ -15,9 +15,9 @@ async function fetchCryptoQuote(symbol) {
   }
 
   return data.data[symbol].quote.USD;
-}
+};
 
-async function getCoinGeckoCoinList(symbol) {
+export const getCoinGeckoCoinList = async (symbol) => {
   const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${symbol}`, {
     headers: {
       'x-cg-demo-api-key': process.env.COINGECKO_API_KEY,
@@ -27,9 +27,9 @@ async function getCoinGeckoCoinList(symbol) {
   if (!response.ok) throw new Error('Failed to fetch CoinGecko coin list');
 
   return await response.json();
-}
+};
 
-async function fetchCoinGeckoMarketChart(coinId, days = 7, vsCurrency = 'usd') {
+export const fetchCoinGeckoMarketChart = async (coinId, days = 7, vsCurrency = 'usd') => {
   const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${vsCurrency}&days=${days}`;
   const response = await fetch(url, {
     headers: {
@@ -40,10 +40,4 @@ async function fetchCoinGeckoMarketChart(coinId, days = 7, vsCurrency = 'usd') {
   if (!response.ok) throw new Error('Coin not found');
 
   return await response.json();
-}
-
-module.exports = {
-  fetchCryptoQuote,
-  getCoinGeckoCoinList,
-  fetchCoinGeckoMarketChart,
 };

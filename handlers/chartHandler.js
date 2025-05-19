@@ -1,10 +1,9 @@
-const { getCoinGeckoCoinList, fetchCoinGeckoMarketChart } = require('../utils/http');
-const { formatPrices, formatLabels } = require('../utils/chartUtils');
+import { getCoinGeckoCoinList, fetchCoinGeckoMarketChart } from '../utils/http.js';
+import { formatPrices, formatLabels } from '../utils/chartUtils.js';
+import { getChartConfig } from './chartConfig.js';
+import { buildQuickChartUrl } from './chartUrl.js';
 
-const { getChartConfig } = require('./chartConfig');
-const { buildQuickChartUrl } = require('./chartUrl');
-
-async function chartHandler(symbol) {
+export const chartHandler = async (symbol) => {
   try {
     // Fetch coin list and find the coin by symbol
     const { coins } = await getCoinGeckoCoinList(symbol);
@@ -26,6 +25,4 @@ async function chartHandler(symbol) {
   } catch (err) {
     console.error('Could not fetch chart for this coin.', err);
   }
-}
-
-module.exports = { chartHandler };
+};

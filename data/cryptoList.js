@@ -1,4 +1,4 @@
-const cryptoList = [
+export const cryptoList = [
   { command: 'btc', symbol: 'BTC', name: 'Bitcoin (BTC)' },
   { command: 'eth', symbol: 'ETH', name: 'Ethereum (ETH)' },
   { command: 'bnb', symbol: 'BNB', name: 'BNB (BNB)' },
@@ -29,5 +29,3 @@ const cryptoList = [
   { command: 'imx', symbol: 'IMX', name: 'Immutable (IMX)' },
   { command: 'pepe', symbol: 'PEPE', name: 'Pepe (PEPE)' },
 ];
-
-module.exports = { cryptoList }

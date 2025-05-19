@@ -1,21 +1,23 @@
-require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
+import 'dotenv/config';
+import fs from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { Telegraf } from 'telegraf';
 
-const { Telegraf } = require('telegraf');
+import { fetchCryptoQuote } from '../utils/http.js';
+import { formatCryptoMessage } from '../utils/format.js';
+import { registerCryptoCommandFactory } from '../utils/registerCryptoCommand.js';
+import { cryptoList } from '../data/cryptoList.js';
 
-const { fetchCryptoQuote } = require('../utils/http');
-const { formatCryptoMessage } = require('../utils/format');
-const { registerCryptoCommandFactory } = require('../utils/registerCryptoCommand');
-
-const { cryptoList } = require('../data/cryptoList');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 const registerCryptoCommand = registerCryptoCommandFactory(bot, fetchCryptoQuote, formatCryptoMessage);
 
 // Load help documentation text from a separate file
 const helpText = fs.readFileSync(
-  path.join(__dirname, '../docs/help.txt'),
+  join(__dirname, '../docs/help.txt'),
   'utf-8'
 );
 
@@ -29,7 +31,7 @@ cryptoList.forEach(({ command, symbol, name }) => {
   registerCryptoCommand(command, symbol, name);
 });
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
   try {

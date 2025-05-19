@@ -1,14 +1,14 @@
-function getChangeSymbol(value) {
+export const getChangeSymbol = value => {
   if (typeof value !== 'number') return '⚪';
   return value > 0 ? '🟢' : value < 0 ? '🔴' : '⚪';
-}
+};
 
-function safeFixed(value, digits = 2) {
+export const safeFixed = (value, digits = 2) => {
   if (typeof value !== 'number') return 'N/A';
   return value >= 1 ? Number(value).toFixed(digits) : trimSmallNumber(value);
-}
+};
 
-function formatCryptoMessage(symbol, data) {
+export const formatCryptoMessage = (symbol, data) => {
   const price = safeFixed(data?.price);
   const percentChange1h = Number(data?.percent_change_1h).toFixed(2);
   const percentChange24h = Number(data?.percent_change_24h).toFixed(2);
@@ -40,16 +40,13 @@ function formatCryptoMessage(symbol, data) {
     `${changeSymbol30d} 30d Change: ${percentChange30d}%\n\n` +
     `🕒 ${formattedDate}`
   );
-}
+};
 
-function trimSmallNumber(num, maxDecimals = 8) {
+export const trimSmallNumber = (num, maxDecimals = 8) => {
   if (typeof num !== 'number') return num;
-  if (num === 0) return "0";
+  if (num === 0) return 0;
   // Convert to string with up to maxDecimals, remove trailing zeros
   let str = num.toFixed(maxDecimals);
-  // Remove trailing zeros and possible trailing decimal point
   str = str.replace(/\.?0+$/, '');
-  return str;
-}
-
-module.exports = { formatCryptoMessage, trimSmallNumber };
+  return Number(str);
+};

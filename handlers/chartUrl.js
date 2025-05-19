@@ -1,4 +1,4 @@
-function buildQuickChartUrl(chartConfig) {
+export const buildQuickChartUrl = (chartConfig) => {
   const url = new URL('https://quickchart.io/chart');
   url.searchParams.set('v', '4');
   url.searchParams.set('width', '1100');
@@ -7,5 +7,3 @@ function buildQuickChartUrl(chartConfig) {
   url.searchParams.set('c', JSON.stringify(chartConfig));
   return url.toString();
 }
-
-module.exports = { buildQuickChartUrl };

@@ -1,7 +1,7 @@
-const { chartHandler } = require('../handlers/chartHandler');
+import { chartHandler } from '../handlers/chartHandler.js';
 
-function registerCryptoCommandFactory(bot, fetchCryptoQuote, formatCryptoMessage) {
-  return (command, symbol, displayName) => {
+export const registerCryptoCommandFactory = (bot, fetchCryptoQuote, formatCryptoMessage) =>
+  (command, symbol, displayName) => {
     bot.command(command, async (ctx) => {
       ctx.deleteMessage(ctx.message.message_id).catch(() => { });
 
@@ -23,6 +23,3 @@ function registerCryptoCommandFactory(bot, fetchCryptoQuote, formatCryptoMessage
       }
     });
   };
-}
-
-module.exports = { registerCryptoCommandFactory }

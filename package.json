@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Crypto bot.",
   "main": "api/bot.js",
+  "type": "module",
   "scripts": {
     "deploy": "vercel --prod"
   },

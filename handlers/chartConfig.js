@@ -1,4 +1,4 @@
-function getChartConfig(symbol, labels, prices) {
+export const getChartConfig = (symbol, labels, prices) => {
   return {
     type: 'line',
     data: {
@@ -69,6 +69,4 @@ function getChartConfig(symbol, labels, prices) {
       }
     }
   };
-}
-
-module.exports = { getChartConfig };
+};
