@@ -1,4 +1,18 @@
 export const getChartConfig = (symbol, labels, prices) => {
+  const numericPrices = prices.map(Number);
+  let min = Math.min(...numericPrices);
+  let max = Math.max(...numericPrices);
+
+  // Add 5% padding
+  const range = max - min;
+  let paddedMin = min - range * 0.05;
+  let paddedMax = max + range * 0.05;
+
+  // Round min down and max up to nearest "nice" number
+  const magnitude = Math.pow(10, Math.floor(Math.log10(range)) - 1);
+  paddedMin = Math.floor(paddedMin / magnitude) * magnitude;
+  paddedMax = Math.ceil(paddedMax / magnitude) * magnitude;
+
   return {
     type: 'line',
     data: {
@@ -11,6 +25,7 @@ export const getChartConfig = (symbol, labels, prices) => {
         backgroundColor: 'rgba(228, 229, 159, 0.20)',
         borderWidth: 2,
         tension: 0.5,
+        yAxisID: 'y'
       }]
     },
     options: {
@@ -55,6 +70,9 @@ export const getChartConfig = (symbol, labels, prices) => {
           }
         },
         y: {
+          position: 'right',
+          min: paddedMin,
+          max: paddedMax,
           ticks: {
             color: "rgb(255,255,255)",
             font: {
@@ -65,7 +83,22 @@ export const getChartConfig = (symbol, labels, prices) => {
           grid: {
             color: 'rgba(255, 255, 255, 0.3)',
           }
-        }
+        },
+        y_left: {
+          position: 'left',
+          min: paddedMin,
+          max: paddedMax,
+          ticks: {
+            color: "rgb(255,255,255)",
+            font: {
+              size: 15,
+              weight: 'bold'
+            }
+          },
+          grid: {
+            display: false // Hide left grid lines to avoid double grid
+          }
+        },
       }
     }
   };
