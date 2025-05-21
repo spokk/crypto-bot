@@ -25,7 +25,7 @@ export const getChartConfig = (symbol, labels, prices) => {
         backgroundColor: 'rgba(228, 229, 159, 0.20)',
         borderWidth: 2,
         tension: 0.5,
-        yAxisID: 'y'
+        yAxisID: 'y',
       }]
     },
     options: {
@@ -35,7 +35,7 @@ export const getChartConfig = (symbol, labels, prices) => {
           labels: {
             color: "rgb(255,255,255)",
             font: {
-              size: 16,
+              size: 24,
               weight: 'bold'
             }
           }
@@ -48,7 +48,6 @@ export const getChartConfig = (symbol, labels, prices) => {
           top: 12,
           bottom: 12
         },
-        backgroundColor: 'rgb(24,28,37)'
       },
       elements: {
         line: { borderJoinStyle: 'round' },
@@ -76,7 +75,7 @@ export const getChartConfig = (symbol, labels, prices) => {
           ticks: {
             color: "rgb(255,255,255)",
             font: {
-              size: 15,
+              size: 18,
               weight: 'bold'
             }
           },
@@ -91,7 +90,7 @@ export const getChartConfig = (symbol, labels, prices) => {
           ticks: {
             color: "rgb(255,255,255)",
             font: {
-              size: 15,
+              size: 18,
               weight: 'bold'
             }
           },
