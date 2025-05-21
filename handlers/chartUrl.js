@@ -3,7 +3,7 @@ export const buildQuickChartUrl = (chartConfig) => {
   url.searchParams.set('v', '4');
   url.searchParams.set('width', '1100');
   url.searchParams.set('height', '500');
-  url.searchParams.set('backgroundColor', 'rgb(19, 19, 19)');
+  url.searchParams.set('backgroundColor', '#1e1e2f');
   url.searchParams.set('c', JSON.stringify(chartConfig));
   return url.toString();
 }

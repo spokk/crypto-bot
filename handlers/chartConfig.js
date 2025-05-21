@@ -20,52 +20,68 @@ export const getChartConfig = (symbol, labels, prices) => {
       datasets: [{
         label: `${symbol.toUpperCase()} price (USD) for the last 7 days.`,
         data: prices,
-        fill: true,
-        borderColor: 'rgb(228, 229, 159)',
-        backgroundColor: 'rgba(228, 229, 159, 0.20)',
+        fill: {
+          target: 'origin',
+          above: 'rgba(0, 122, 204, 0.1)'
+        },
+        borderColor: '#4fc3f7',
+        pointBackgroundColor: '#4fc3f7',
         borderWidth: 2,
-        tension: 0.5,
+        tension: 0.4,
+        pointRadius: 2,
+        pointHoverRadius: 5,
         yAxisID: 'y',
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           display: true,
           labels: {
-            color: "rgb(255,255,255)",
+            color: '#e0e0e0',
             font: {
-              size: 24,
-              weight: 'bold'
-            }
+              size: 14,
+              weight: '600',
+              family: 'Segoe UI, sans-serif',
+            },
+            padding: 16
+          }
+        },
+        tooltip: {
+          backgroundColor: '#2c2c3a',
+          titleColor: '#ffffff',
+          bodyColor: '#dddddd',
+          borderColor: '#555',
+          borderWidth: 1,
+          titleFont: {
+            weight: '600'
           }
         }
       },
       layout: {
         padding: {
-          left: 12,
-          right: 20,
-          top: 12,
-          bottom: 12
-        },
-      },
-      elements: {
-        line: { borderJoinStyle: 'round' },
-        point: { radius: 2, borderWidth: 1 }
+          top: 4, bottom: 20, left: 16, right: 16
+        }
       },
       scales: {
         x: {
           ticks: {
-            color: "rgb(255,255,255)",
-            font: { size: 13 },
+            color: '#cccccc',
+            font: {
+              size: 13,
+              family: 'Segoe UI, sans-serif',
+            },
             maxRotation: 45,
             minRotation: 30,
             autoSkip: true,
             maxTicksLimit: 16,
-            showLastLabel: true
+            showLastLabel: true, // Always show last tick
           },
           grid: {
-            color: 'rgba(255, 255, 255, 0.3)',
+            color: 'rgba(255, 255, 255, 0.05)',
+            borderColor: 'transparent'
           }
         },
         y: {
@@ -73,14 +89,17 @@ export const getChartConfig = (symbol, labels, prices) => {
           min: paddedMin,
           max: paddedMax,
           ticks: {
-            color: "rgb(255,255,255)",
+            color: '#cccccc',
             font: {
-              size: 18,
-              weight: 'bold'
-            }
+              size: 16,
+              family: 'Segoe UI, sans-serif',
+              weight: '500'
+            },
+            padding: 6
           },
           grid: {
-            color: 'rgba(255, 255, 255, 0.3)',
+            color: 'rgba(255, 255, 255, 0.05)',
+            borderColor: 'transparent'
           }
         },
         y_left: {
@@ -88,16 +107,18 @@ export const getChartConfig = (symbol, labels, prices) => {
           min: paddedMin,
           max: paddedMax,
           ticks: {
-            color: "rgb(255,255,255)",
+            color: '#cccccc',
             font: {
-              size: 18,
-              weight: 'bold'
-            }
+              size: 16,
+              family: 'Segoe UI, sans-serif',
+              weight: '500'
+            },
+            padding: 6
           },
           grid: {
             display: false // Hide left grid lines to avoid double grid
           }
-        },
+        }
       }
     }
   };
