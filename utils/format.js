@@ -5,7 +5,8 @@ export const getChangeSymbol = value => {
 
 export const safeFixed = (value, digits = 2) => {
   if (typeof value !== 'number') return 'N/A';
-  return value >= 1 ? Number(value).toFixed(digits) : trimSmallNumber(value);
+  const num = value >= 1 ? Number(value).toFixed(digits) : trimSmallNumber(value);
+  return value >= 1 ? Number(num).toLocaleString('en-US') : num;
 };
 
 export const formatCryptoMessage = (symbol, data) => {
@@ -32,8 +33,8 @@ export const formatCryptoMessage = (symbol, data) => {
     : 'N/A';
 
   return (
-    `📊 ${symbol}:\n` +
-    `💰 Price: $${price}\n` +
+    `🪙 ${symbol}:\n` +
+    `💵 Price: $${price}\n` +
     `${changeSymbol1h} 1h Change: ${percentChange1h}%\n` +
     `${changeSymbol24h} 24h Change: ${percentChange24h}%\n` +
     `${changeSymbol7d} 7d Change: ${percentChange7d}%\n` +

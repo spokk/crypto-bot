@@ -41,3 +41,18 @@ export const fetchCoinGeckoMarketChart = async (coinId, days = 7, vsCurrency = '
 
   return await response.json();
 };
+
+export const fetchCoinGeckoCoinData = async (coinId) => {
+  const url = `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+
+  const response = await fetch(url, {
+    headers: {
+      'x-cg-demo-api-key': process.env.COINGECKO_API_KEY,
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) throw new Error('Coin not found');
+
+  return await response.json();
+};

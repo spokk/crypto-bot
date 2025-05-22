@@ -1,4 +1,4 @@
-export const getChartConfig = (symbol, labels, prices) => {
+export const getChartConfig = (symbol, labels, prices, coinData) => {
   const numericPrices = prices.map(Number);
   let min = Math.min(...numericPrices);
   let max = Math.max(...numericPrices);
@@ -13,12 +13,19 @@ export const getChartConfig = (symbol, labels, prices) => {
   paddedMin = Math.floor(paddedMin / magnitude) * magnitude;
   paddedMax = Math.ceil(paddedMax / magnitude) * magnitude;
 
+  const max24 = typeof coinData?.market_data?.high_24h?.usd === 'number'
+    ? coinData.market_data.high_24h.usd.toLocaleString('en-US')
+    : 'N/A';
+  const min24 = typeof coinData?.market_data?.low_24h?.usd === 'number'
+    ? coinData.market_data.low_24h.usd.toLocaleString('en-US')
+    : 'N/A';
+
   return {
     type: 'line',
     data: {
       labels,
       datasets: [{
-        label: `${symbol.toUpperCase()} price (USD) for the last 7 days.`,
+        label: `${symbol.toUpperCase()} price | 24h High: $${max24} | 24h Low: $${min24}`,
         data: prices,
         fill: {
           target: 'origin',
@@ -42,8 +49,8 @@ export const getChartConfig = (symbol, labels, prices) => {
           labels: {
             color: '#e0e0e0',
             font: {
-              size: 14,
-              weight: '600',
+              size: 18,
+              weight: '700',
               family: 'Segoe UI, sans-serif',
             },
             padding: 16
@@ -93,7 +100,7 @@ export const getChartConfig = (symbol, labels, prices) => {
             font: {
               size: 16,
               family: 'Segoe UI, sans-serif',
-              weight: '500'
+              weight: '700'
             },
             padding: 6
           },
@@ -111,7 +118,7 @@ export const getChartConfig = (symbol, labels, prices) => {
             font: {
               size: 16,
               family: 'Segoe UI, sans-serif',
-              weight: '500'
+              weight: '700'
             },
             padding: 6
           },

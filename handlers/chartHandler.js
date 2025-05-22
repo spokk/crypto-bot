@@ -1,4 +1,4 @@
-import { getCoinGeckoCoinList, fetchCoinGeckoMarketChart } from '../utils/http.js';
+import { getCoinGeckoCoinList, fetchCoinGeckoMarketChart, fetchCoinGeckoCoinData } from '../utils/http.js';
 import { formatPrices, formatLabels } from '../utils/chartUtils.js';
 import { getChartConfig } from './chartConfig.js';
 import { buildQuickChartUrl } from './chartUrl.js';
@@ -13,13 +13,14 @@ export const chartHandler = async (symbol) => {
 
     // Fetch market chart data
     const chart = await fetchCoinGeckoMarketChart(coin.id);
+    const coinData = await fetchCoinGeckoCoinData(coin.id);
 
     // Prepare price and label arrays
     const prices = formatPrices(chart.prices);
     const labels = formatLabels(chart.prices);
 
     // Get chart config from separate file
-    const chartConfig = getChartConfig(symbol, labels, prices);
+    const chartConfig = getChartConfig(symbol, labels, prices, coinData);
 
     return buildQuickChartUrl(chartConfig);
   } catch (err) {
