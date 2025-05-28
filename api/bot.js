@@ -16,13 +16,19 @@ const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 const registerCryptoCommand = registerCryptoCommandFactory(bot, fetchCryptoQuote, formatCryptoMessage);
 
 // Load help documentation text from a separate file
-const helpText = fs.readFileSync(
-  join(__dirname, '../docs/help.txt'),
-  'utf-8'
-);
+let helpTextCache = null;
+async function getHelpText() {
+  if (helpTextCache) return helpTextCache;
+  helpTextCache = await fs.promises.readFile(
+    join(__dirname, '../docs/help.txt'),
+    'utf-8'
+  );
+  return helpTextCache;
+}
 
 // Register help command
 bot.command('help', async (ctx) => {
+  const helpText = await getHelpText();
   await ctx.replyWithHTML(helpText, { disable_notification: true });
 });
 
