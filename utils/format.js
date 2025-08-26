@@ -9,7 +9,7 @@ export const safeFixed = (value, digits = 2) => {
   return value >= 1 ? Number(num).toLocaleString('en-US') : num;
 };
 
-export const formatCryptoMessage = (symbol, data) => {
+export const formatCryptoMessage = (symbol, data, globalMetrics, fearAndGreed) => {
   const price = safeFixed(data?.price);
   const percentChange1h = Number(data?.percent_change_1h).toFixed(2);
   const percentChange24h = Number(data?.percent_change_24h).toFixed(2);
@@ -32,6 +32,13 @@ export const formatCryptoMessage = (symbol, data) => {
     })
     : 'N/A';
 
+  const formattedTotalMarketCap = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
+    maximumFractionDigits: 2
+  }).format(globalMetrics?.quote?.USD?.total_market_cap);
+
   return (
     `🪙 ${symbol}:\n` +
     `💵 Price: $${price}\n` +
@@ -39,6 +46,11 @@ export const formatCryptoMessage = (symbol, data) => {
     `${changeSymbol24h} 24h Change: ${percentChange24h}%\n` +
     `${changeSymbol7d} 7d Change: ${percentChange7d}%\n` +
     `${changeSymbol30d} 30d Change: ${percentChange30d}%\n\n` +
+    `Market overview:\n` +
+    `🧠 Fear & Greed Index: ${fearAndGreed?.value} (${fearAndGreed?.value_classification})\n` +
+    `🟠 BTC Dominance: ${safeFixed(globalMetrics?.btc_dominance, 2)}%\n` +
+    `💎 ETH Dominance: ${safeFixed(globalMetrics?.eth_dominance, 2)}%\n` +
+    `💰 Total Market Cap: ${formattedTotalMarketCap}\n\n` +
     `🕒 ${formattedDate}`
   );
 };

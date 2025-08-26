@@ -17,6 +17,44 @@ export const fetchCryptoQuote = async (symbol) => {
   return data.data[symbol].quote.USD;
 };
 
+export const fetchFearAndGreed = async () => {
+  const url = `https://pro-api.coinmarketcap.com/v3/fear-and-greed/latest`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
+      'Accept': 'application/json'
+    }
+  });
+  const data = await response.json();
+
+  if (!data.data) {
+    console.error('CoinMarketCap API response:', JSON.stringify(data, null, 2));
+    throw new Error(`No data for fear and greed index`);
+  }
+
+  return data.data;
+};
+
+export const fetchGlobalMetrics = async () => {
+  const url = `https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
+      'Accept': 'application/json'
+    }
+  });
+  const data = await response.json();
+
+  if (!data.data) {
+    console.error('CoinMarketCap API response:', JSON.stringify(data, null, 2));
+    throw new Error(`No data for global metrics`);
+  }
+
+  return data.data;
+};
+
 export const getCoinGeckoCoinList = async (symbol) => {
   const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${symbol}`, {
     headers: {

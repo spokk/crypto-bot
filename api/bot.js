@@ -4,7 +4,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { Telegraf } from 'telegraf';
 
-import { fetchCryptoQuote } from '../utils/http.js';
+import { fetchCryptoQuote, fetchFearAndGreed, fetchGlobalMetrics } from '../utils/http.js';
 import { formatCryptoMessage } from '../utils/format.js';
 import { registerCryptoCommandFactory } from '../utils/registerCryptoCommand.js';
 import { cryptoList } from '../data/cryptoList.js';
@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-const registerCryptoCommand = registerCryptoCommandFactory(bot, fetchCryptoQuote, formatCryptoMessage);
+const registerCryptoCommand = registerCryptoCommandFactory(bot, fetchCryptoQuote, fetchFearAndGreed, fetchGlobalMetrics, formatCryptoMessage);
 
 // Load help documentation text from a separate file
 let helpTextCache = null;
