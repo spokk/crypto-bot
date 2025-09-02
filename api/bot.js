@@ -4,8 +4,13 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { Telegraf } from 'telegraf';
 
-import { fetchCryptoQuote, fetchFearAndGreed, fetchGlobalMetrics } from '../utils/http.js';
-import { formatCryptoMessage } from '../utils/format.js';
+import {
+  fetchCryptoQuote,
+  fetchFearAndGreed,
+  fetchGlobalMetrics,
+  fetchCoinGeckoTopData
+} from '../utils/http.js';
+import { formatCryptoMessage, formatTopCryptosMessage } from '../utils/format.js';
 import { registerCryptoCommandFactory } from '../utils/registerCryptoCommand.js';
 import { cryptoList } from '../data/cryptoList.js';
 
@@ -26,6 +31,13 @@ async function getHelpText() {
   return helpTextCache;
 }
 
+bot.telegram.setMyCommands([
+  { command: 'eth', description: 'Current price of Ethereum (ETH)' },
+  { command: 'btc', description: 'Current price of Bitcoin (BTC)' },
+  { command: 'top', description: 'Top cryptocurrencies by market cap' },
+  { command: 'help', description: 'List of all available commands' },
+]);
+
 // Register help command
 bot.command('help', async (ctx) => {
   const helpText = await getHelpText();
@@ -35,6 +47,20 @@ bot.command('help', async (ctx) => {
 // Register all crypto commands
 cryptoList.forEach(({ command, symbol, name }) => {
   registerCryptoCommand(command, symbol, name);
+});
+
+bot.command("top", async (ctx) => {
+  ctx.deleteMessage(ctx.message.message_id).catch(() => { });
+
+  const [topData, globalMetrics, fearAndGreed] = await Promise.all([
+    fetchCoinGeckoTopData(),
+    fetchGlobalMetrics(),
+    fetchFearAndGreed()
+  ]);
+
+  const reply = formatTopCryptosMessage(topData, globalMetrics, fearAndGreed)
+
+  await ctx.replyWithHTML(reply, { disable_notification: true });
 });
 
 export default async (req, res) => {

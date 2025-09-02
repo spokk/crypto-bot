@@ -94,3 +94,18 @@ export const fetchCoinGeckoCoinData = async (coinId) => {
 
   return await response.json();
 };
+
+export const fetchCoinGeckoTopData = async () => {
+  const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&symbols=btc%2Ceth%2Cxrp%2Cbnb%2Csol%2Cdoge%2Ctrx%2Cada%2Clink%2Cxlm&order=market_cap_desc&per_page=20&sparkline=false`;
+
+  const response = await fetch(url, {
+    headers: {
+      'x-cg-demo-api-key': process.env.COINGECKO_API_KEY,
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) throw new Error('Top coins not found');
+
+  return await response.json();
+};
