@@ -28,4 +28,6 @@ export const cryptoList = [
   { command: 'cro', symbol: 'CRO', name: 'Cronos (CRO)' },
   { command: 'imx', symbol: 'IMX', name: 'Immutable (IMX)' },
   { command: 'pepe', symbol: 'PEPE', name: 'Pepe (PEPE)' },
+  { command: 'gold', symbol: 'XAUt', name: 'Tether Gold (XAUt)' },
+  { command: 'silver', symbol: 'KAG', name: 'Kinesis Silver (KAG)' }
 ];

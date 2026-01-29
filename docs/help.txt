@@ -30,5 +30,7 @@ The following commands are available:
 /cro - Cronos (CRO)
 /imx - Immutable (IMX)
 /pepe - Pepe (PEPE)
+/gold - Tether Gold (XAUt)
+/silver - Kinesis Silver (KAG)
 
 Type any command above (with a slash, e.g. /btc) to get the latest information for that cryptocurrency.
