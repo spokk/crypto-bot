@@ -1,38 +1,46 @@
 export const getChangeSymbol = value => {
-  if (typeof value !== 'number') return '⚪';
-  return value > 0 ? '🟢' : value < 0 ? '🔴' : '⚪';
+  if (typeof value !== "number") return "⚪";
+  return value > 0 ? "🟢" : value < 0 ? "🔴" : "⚪";
 };
 
 export const safeFixed = (value, digits = 2) => {
-  if (typeof value !== 'number') return 'N/A';
-  const num = value >= 1 ? Number(value).toFixed(digits) : trimSmallNumber(value);
-  return value >= 1 ? Number(num).toLocaleString('en-US') : num;
+  if (typeof value !== "number") return "N/A";
+  const num =
+    value >= 1 ? Number(value).toFixed(digits) : trimSmallNumber(value);
+  return value >= 1 ? Number(num).toLocaleString("en-US") : num;
 };
 
 export const trimSmallNumber = (num, maxDecimals = 8) => {
-  if (typeof num !== 'number') return num;
+  if (typeof num !== "number") return num;
   if (num === 0) return 0;
   // Convert to string with up to maxDecimals, remove trailing zeros
   let str = num.toFixed(maxDecimals);
-  str = str.replace(/\.?0+$/, '');
+  str = str.replace(/\.?0+$/, "");
   return Number(str);
 };
 
 export const getMarketOverview = (globalMetrics, fearAndGreed) => {
-  const formattedTotalMarketCap = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    notation: 'compact',
-    maximumFractionDigits: 2
+  const formattedTotalMarketCap = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: 2,
   }).format(globalMetrics?.quote?.USD?.total_market_cap);
 
-  return `🧠 Fear & Greed Index: ${fearAndGreed?.value} (${fearAndGreed?.value_classification})\n` +
+  return (
+    `🧠 Fear & Greed Index: ${fearAndGreed?.value} (${fearAndGreed?.value_classification})\n` +
     `🟠 BTC Dominance: ${safeFixed(globalMetrics?.btc_dominance, 2)}%\n` +
     `💎 ETH Dominance: ${safeFixed(globalMetrics?.eth_dominance, 2)}%\n` +
-    `💰 Total Market Cap: ${formattedTotalMarketCap}`;
-}
+    `💰 Total Market Cap: ${formattedTotalMarketCap}`
+  );
+};
 
-export const formatCryptoMessage = (symbol, data, globalMetrics, fearAndGreed) => {
+export const formatCryptoMessage = (
+  symbol,
+  data,
+  globalMetrics,
+  fearAndGreed,
+) => {
   const price = safeFixed(data?.price);
   const percentChange1h = Number(data?.percent_change_1h).toFixed(2);
   const percentChange24h = Number(data?.percent_change_24h).toFixed(2);
@@ -45,17 +53,15 @@ export const formatCryptoMessage = (symbol, data, globalMetrics, fearAndGreed) =
   const changeSymbol30d = getChangeSymbol(data?.percent_change_30d);
 
   const formattedDate = data?.last_updated
-    ? new Date(data.last_updated).toLocaleString('uk-UA', {
-      timeZone: 'Europe/Kyiv',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-    : 'N/A';
-
-
+    ? new Date(data.last_updated).toLocaleString("uk-UA", {
+        timeZone: "Europe/Kyiv",
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "N/A";
 
   return (
     `🪙 ${symbol}:\n` +
@@ -71,26 +77,31 @@ export const formatCryptoMessage = (symbol, data, globalMetrics, fearAndGreed) =
 };
 
 const formatNumber = (num, decimals = 2) => {
-  if (typeof num !== 'number' || isNaN(num)) return '-';
+  if (typeof num !== "number" || isNaN(num)) return "-";
   return num.toFixed(decimals);
 };
 
-const formatPercentage = (num) => {
-  if (typeof num !== 'number' || isNaN(num)) return '-';
+const formatPercentage = num => {
+  if (typeof num !== "number" || isNaN(num)) return "-";
   const absNum = Math.abs(num);
 
-  if (absNum > 0 && absNum < 0.01) return '~0.01%';
-  return num.toFixed(2) + '%';
+  if (absNum > 0 && absNum < 0.01) return "~0.01%";
+  return num.toFixed(2) + "%";
 };
 
-export const formatTopCryptosMessage = (topData, globalMetrics, fearAndGreed) => {
-  if (!Array.isArray(topData) || topData.length === 0) return 'No data available.';
+export const formatTopCryptosMessage = (
+  topData,
+  globalMetrics,
+  fearAndGreed,
+) => {
+  if (!Array.isArray(topData) || topData.length === 0)
+    return "No data available.";
 
-  const rows = topData.map((coin) => {
+  const rows = topData.map(coin => {
     const name = coin.name;
     const price = `$${formatNumber(coin.current_price)}`;
     const change = formatPercentage(coin.price_change_percentage_24h);
-    const changeIcon = coin.price_change_percentage_24h >= 0 ? '🟢' : '🔴';
+    const changeIcon = coin.price_change_percentage_24h >= 0 ? "🟢" : "🔴";
     return { name, price, change, changeIcon };
   });
 
@@ -99,41 +110,44 @@ export const formatTopCryptosMessage = (topData, globalMetrics, fearAndGreed) =>
     name: Math.max(...rows.map(r => r.name.length), 4),
     price: Math.max(...rows.map(r => r.price.length), 5),
     change: Math.min(
-      Math.max(...rows.map(r => (r.changeIcon + ' ' + r.change).length)),
-      MAX_CHANGE_WIDTH
-    )
+      Math.max(...rows.map(r => (r.changeIcon + " " + r.change).length)),
+      MAX_CHANGE_WIDTH,
+    ),
   };
 
   // Separator line between columns
-  const columnSeparator = ' │ ';
+  const columnSeparator = " │ ";
 
   // Build header with exact padding
   const header = [
-    'Name'.padEnd(colWidths.name),
-    'Price'.padEnd(colWidths.price),
-    '24h'.padEnd(colWidths.change)
+    "Coin".padEnd(colWidths.name),
+    "Price".padEnd(colWidths.price),
+    "24h Δ".padEnd(colWidths.change),
   ].join(columnSeparator);
 
   let msg = `<pre>`;
-  msg += header + '\n';
-  msg += '─'.repeat(colWidths.name) + '─┼─' +
-    '─'.repeat(colWidths.price) + '─┼─' +
-    '─'.repeat(colWidths.change) + '\n';
+  msg += header + "\n";
+  msg +=
+    "─".repeat(colWidths.name) +
+    "─┼─" +
+    "─".repeat(colWidths.price) +
+    "─┼─" +
+    "─".repeat(colWidths.change) +
+    "\n";
 
-  rows.forEach((r) => {
-    const changeCell = (r.changeIcon + ' ' + r.change).padEnd(colWidths.change);
-    msg += [
-      r.name.padEnd(colWidths.name),
-      r.price.padEnd(colWidths.price),
-      changeCell
-    ].join(columnSeparator) + '\n';
+  rows.forEach(r => {
+    const changeCell = (r.changeIcon + " " + r.change).padEnd(colWidths.change);
+    msg +=
+      [
+        r.name.padEnd(colWidths.name),
+        r.price.padEnd(colWidths.price),
+        changeCell,
+      ].join(columnSeparator) + "\n";
   });
 
   msg += `</pre>`;
 
-  const withMarketData = `<b>Market overview:</b>\n${getMarketOverview(globalMetrics, fearAndGreed)}${msg}`;
+  const withMarketData = `<b>Market overview:</b>\n${msg}\n\n${getMarketOverview(globalMetrics, fearAndGreed)}`;
 
   return withMarketData;
 };
-
-
