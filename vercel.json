@@ -5,9 +5,7 @@
       "use": "@vercel/node"
     }
   ],
-  "regions": [
-    "iad1"
-  ],
+  "regions": ["iad1"],
   "routes": [
     {
       "dest": "/api/bot.js",

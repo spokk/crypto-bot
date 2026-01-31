@@ -12,9 +12,11 @@ A Telegram bot that provides up-to-date cryptocurrency price charts using CoinGe
 ## Example Command
 
 Send a symbol to the bot (e.g.):
+
 ```
 /btc
 ```
+
 The bot will reply with a 7-day price chart for Bitcoin.
 
 ## License

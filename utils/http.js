@@ -1,4 +1,4 @@
-export const fetchCryptoQuote = async symbol => {
+export const fetchCryptoQuote = async (symbol) => {
   const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`;
   const response = await fetch(url, {
     method: "GET",
@@ -55,7 +55,7 @@ export const fetchGlobalMetrics = async () => {
   return data.data;
 };
 
-export const getCoinGeckoCoinList = async symbol => {
+export const getCoinGeckoCoinList = async (symbol) => {
   const response = await fetch(
     `https://api.coingecko.com/api/v3/search?query=${symbol}`,
     {
@@ -87,7 +87,7 @@ export const fetchCoinGeckoMarketChart = async (
   return await response.json();
 };
 
-export const fetchCoinGeckoCoinData = async coinId => {
+export const fetchCoinGeckoCoinData = async (coinId) => {
   const url = `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
 
   const response = await fetch(url, {

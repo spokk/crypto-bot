@@ -1,4 +1,4 @@
-export const getChangeSymbol = value => {
+export const getChangeSymbol = (value) => {
   if (typeof value !== "number") return "⚪";
   return value > 0 ? "🟢" : value < 0 ? "🔴" : "⚪";
 };
@@ -81,7 +81,7 @@ const formatNumber = (num, decimals = 2) => {
   return num.toFixed(decimals);
 };
 
-const formatPercentage = num => {
+const formatPercentage = (num) => {
   if (typeof num !== "number" || isNaN(num)) return "-";
   const absNum = Math.abs(num);
 
@@ -97,7 +97,7 @@ export const formatTopCryptosMessage = (
   if (!Array.isArray(topData) || topData.length === 0)
     return "No data available.";
 
-  const rows = topData.map(coin => {
+  const rows = topData.map((coin) => {
     const name = coin.name;
     const price = `$${formatNumber(coin.current_price)}`;
     const change = formatPercentage(coin.price_change_percentage_24h);
@@ -107,10 +107,10 @@ export const formatTopCryptosMessage = (
 
   const MAX_CHANGE_WIDTH = 7;
   const colWidths = {
-    name: Math.max(...rows.map(r => r.name.length), 4),
-    price: Math.max(...rows.map(r => r.price.length), 5),
+    name: Math.max(...rows.map((r) => r.name.length), 4),
+    price: Math.max(...rows.map((r) => r.price.length), 5),
     change: Math.min(
-      Math.max(...rows.map(r => (r.changeIcon + " " + r.change).length)),
+      Math.max(...rows.map((r) => (r.changeIcon + " " + r.change).length)),
       MAX_CHANGE_WIDTH,
     ),
   };
@@ -135,7 +135,7 @@ export const formatTopCryptosMessage = (
     "─".repeat(colWidths.change) +
     "\n";
 
-  rows.forEach(r => {
+  rows.forEach((r) => {
     const changeCell = (r.changeIcon + " " + r.change).padEnd(colWidths.change);
     msg +=
       [
