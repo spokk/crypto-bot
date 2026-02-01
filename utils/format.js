@@ -94,38 +94,65 @@ export const formatTopCryptosMessage = (
   globalMetrics,
   fearAndGreed,
 ) => {
-  if (!Array.isArray(topData) || topData.length === 0)
+  if (!Array.isArray(topData) || topData.length === 0) {
     return "No data available.";
+  }
+
+  // --- Helpers --------------------------------------------------
+
+  const shortName = (name) => {
+    const map = {
+      Bitcoin: "Bitcoin",
+      Ethereum: "Ethereum",
+      "Tether Gold": "Gold",
+      "Kinesis Silver": "Silver",
+    };
+    return map[name] ?? null;
+  };
+
+  // --- Normalize rows -------------------------------------------
 
   const rows = topData.map((coin) => {
-    const name = coin.name;
+    const name = shortName(coin.name) ?? coin.name;
     const price = `$${formatNumber(coin.current_price)}`;
     const change = formatPercentage(coin.price_change_percentage_24h);
     const changeIcon = coin.price_change_percentage_24h >= 0 ? "🟢" : "🔴";
+
     return { name, price, change, changeIcon };
   });
 
-  const MAX_CHANGE_WIDTH = 7;
+  // --- Column widths (hard limits for Telegram) -----------------
+
+  const MAX_NAME_WIDTH = 8;
+  const MAX_PRICE_WIDTH = 10;
+  const MAX_CHANGE_WIDTH = 10;
+
   const colWidths = {
-    name: Math.max(...rows.map((r) => r.name.length), 4),
-    price: Math.max(...rows.map((r) => r.price.length), 5),
+    name: Math.min(
+      Math.max(...rows.map((r) => r.name.length), 4),
+      MAX_NAME_WIDTH,
+    ),
+    price: Math.min(
+      Math.max(...rows.map((r) => r.price.length), 5),
+      MAX_PRICE_WIDTH,
+    ),
     change: Math.min(
-      Math.max(...rows.map((r) => (r.changeIcon + " " + r.change).length)),
+      Math.max(...rows.map((r) => (r.changeIcon + " " + r.change).length), 5),
       MAX_CHANGE_WIDTH,
     ),
   };
 
-  // Separator line between columns
+  // --- Build table ----------------------------------------------
+
   const columnSeparator = " │ ";
 
-  // Build header with exact padding
   const header = [
     "Coin".padEnd(colWidths.name),
     "Price".padEnd(colWidths.price),
     "24h Δ".padEnd(colWidths.change),
   ].join(columnSeparator);
 
-  let msg = `<pre>`;
+  let msg = "<pre>";
   msg += header + "\n";
   msg +=
     "─".repeat(colWidths.name) +
@@ -136,7 +163,8 @@ export const formatTopCryptosMessage = (
     "\n";
 
   rows.forEach((r) => {
-    const changeCell = (r.changeIcon + " " + r.change).padEnd(colWidths.change);
+    const changeCell = `${r.changeIcon} ${r.change}`.padEnd(colWidths.change);
+
     msg +=
       [
         r.name.padEnd(colWidths.name),
@@ -145,9 +173,12 @@ export const formatTopCryptosMessage = (
       ].join(columnSeparator) + "\n";
   });
 
-  msg += `</pre>`;
+  msg += "</pre>";
 
-  const withMarketData = `<b>Market overview:</b>\n${msg}\n\n${getMarketOverview(globalMetrics, fearAndGreed)}`;
+  // --- Final message --------------------------------------------
 
-  return withMarketData;
+  return `<b>Market overview:</b>\n${msg}\n\n${getMarketOverview(
+    globalMetrics,
+    fearAndGreed,
+  )}`;
 };
