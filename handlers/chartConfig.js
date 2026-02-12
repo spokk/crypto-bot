@@ -111,6 +111,28 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
     },
   ];
 
+  // Legend entries for annotation lines
+  datasets.push(
+    {
+      label: "7d High / Low",
+      data: [],
+      borderColor: ANNOTATION_COLOR,
+      borderDash: [6, 4],
+      borderWidth: 1.5,
+      pointRadius: 0,
+      fill: false,
+    },
+    {
+      label: "7d Avg",
+      data: [],
+      borderColor: AVG_COLOR,
+      borderDash: [4, 4],
+      borderWidth: 1.5,
+      pointRadius: 0,
+      fill: false,
+    },
+  );
+
   // Volume bars on secondary axis
   if (volumes && volumes.length > 0) {
     datasets.push({
