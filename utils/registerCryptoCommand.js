@@ -13,24 +13,24 @@ export const registerCryptoCommandFactory =
       ctx.deleteMessage(ctx.message.message_id).catch(() => {});
 
       try {
-        const [data, chartUrl, globalMetrics, fearAndGreed] = await Promise.all(
-          [
+        const [data, chartResult, globalMetrics, fearAndGreed] =
+          await Promise.all([
             fetchCryptoQuote(symbol),
             chartHandler(symbol),
             fetchGlobalMetrics(),
             fetchFearAndGreed(),
-          ],
-        );
+          ]);
 
         const message = formatCryptoMessage(
           displayName,
           data,
           globalMetrics,
           fearAndGreed,
+          { high24: chartResult.high24, low24: chartResult.low24 },
         );
 
-        if (chartUrl) {
-          await ctx.replyWithPhoto(chartUrl, {
+        if (chartResult?.url) {
+          await ctx.replyWithPhoto(chartResult.url, {
             caption: message,
             disable_notification: true,
           });

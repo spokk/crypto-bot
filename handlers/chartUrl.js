@@ -1,7 +1,7 @@
 const CHART_DEFAULTS = {
   API_VERSION: "4",
   WIDTH: "1100",
-  HEIGHT: "500",
+  HEIGHT: "550",
   BACKGROUND_COLOR: "#1e1e2f",
   BASE_URL: "https://quickchart.io/chart",
 };

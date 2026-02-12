@@ -17,10 +17,11 @@ const MARKET_CAP_FORMAT = {
 const DATE_FORMAT_OPTIONS = {
   timeZone: "Europe/Kyiv",
   day: "2-digit",
-  month: "long",
+  month: "short",
   year: "numeric",
   hour: "2-digit",
   minute: "2-digit",
+  hour12: false,
 };
 
 const CHANGE_PERIODS = [
@@ -43,6 +44,17 @@ const formatPercentage = (num) => {
 
   if (absNum > 0 && absNum < 0.01) return "~0.01%";
   return num.toFixed(2) + "%";
+};
+
+const formatCompactUsd = (value) => {
+  if (typeof value !== "number" || isNaN(value)) return "N/A";
+  return new Intl.NumberFormat("en-US", MARKET_CAP_FORMAT).format(value);
+};
+
+const formatSignedPct = (value) => {
+  if (typeof value !== "number" || isNaN(value)) return "N/A";
+  const sign = value >= 0 ? "+" : "";
+  return `${sign}${value.toFixed(2)}%`;
 };
 
 // — Exported helpers ——————————————————————————————————————————————————————————
@@ -75,7 +87,7 @@ export const getMarketOverview = (globalMetrics, fearAndGreed) => {
   ).format(globalMetrics?.quote?.USD?.total_market_cap);
 
   return [
-    `🧠 Fear & Greed Index: ${fearAndGreed?.value} (${fearAndGreed?.value_classification})`,
+    `🧠 Fear & Greed: ${fearAndGreed?.value} (${fearAndGreed?.value_classification})`,
     `🟠 BTC Dominance: ${safeFixed(globalMetrics?.btc_dominance, 2)}%`,
     `💎 ETH Dominance: ${safeFixed(globalMetrics?.eth_dominance, 2)}%`,
     `💰 Total Market Cap: ${formattedTotalMarketCap}`,
@@ -87,26 +99,41 @@ export const formatCryptoMessage = (
   data,
   globalMetrics,
   fearAndGreed,
+  range24 = {},
 ) => {
   const price = safeFixed(data?.price);
 
-  const changeLines = CHANGE_PERIODS.map(({ label, key }) => {
+  // Change pairs: 2 per line
+  const changes = CHANGE_PERIODS.map(({ label, key }) => {
     const raw = data?.[key];
-    const pct = Number(raw).toFixed(2);
-    const icon = getChangeSymbol(raw);
-    return `${icon} ${label} Change: ${pct}%`;
+    return `${getChangeSymbol(raw)} ${label} ${formatSignedPct(raw)}`;
   });
+  const changeLine1 = `${changes[0]}  ·  ${changes[1]}`;
+  const changeLine2 = `${changes[2]}  ·  ${changes[3]}`;
+
+  // 24h range + market stats on compact lines
+  const details = [];
+  if (typeof range24.high24 === "number" || typeof range24.low24 === "number") {
+    const high =
+      typeof range24.high24 === "number"
+        ? `$${safeFixed(range24.high24)}`
+        : "-";
+    const low =
+      typeof range24.low24 === "number" ? `$${safeFixed(range24.low24)}` : "-";
+    details.push(`📈 ${high}  ·  📉 ${low}`);
+  }
 
   const formattedDate = data?.last_updated
-    ? new Date(data.last_updated).toLocaleString("uk-UA", DATE_FORMAT_OPTIONS)
+    ? new Date(data.last_updated).toLocaleString("en-US", DATE_FORMAT_OPTIONS)
     : "N/A";
 
   return [
-    `🪙 ${symbol}:`,
-    `💵 Price: $${price}`,
-    ...changeLines,
+    `🪙 ${symbol} | 💵 $${price}`,
     "",
-    `Market overview:`,
+    changeLine1,
+    changeLine2,
+    ...details,
+    "",
     getMarketOverview(globalMetrics, fearAndGreed),
     "",
     `🕒 ${formattedDate}`,
