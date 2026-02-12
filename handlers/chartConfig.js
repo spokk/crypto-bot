@@ -1,6 +1,6 @@
-const TICK_COLOR = "#cccccc";
-const LABEL_COLOR = "#e0e0e0";
-const GRID_COLOR = "rgba(255, 255, 255, 0.05)";
+const TICK_COLOR = "#e0e0e0";
+const LABEL_COLOR = "#f0f0f0";
+const GRID_COLOR = "rgba(255, 255, 255, 0.08)";
 const FONT_FAMILY = "Segoe UI, sans-serif";
 
 const LINE_COLOR = "#4fc3f7";
@@ -9,8 +9,8 @@ const TOOLTIP_BG = "#2c2c3a";
 
 const UP_COLOR = "#26a69a";
 const DOWN_COLOR = "#ef5350";
-const ANNOTATION_COLOR = "rgba(255, 255, 255, 0.35)";
-const AVG_COLOR = "rgba(255, 193, 7, 0.5)";
+const ANNOTATION_COLOR = "rgba(255, 255, 255, 0.45)";
+const AVG_COLOR = "rgba(255, 193, 7, 0.6)";
 const VOLUME_COLOR = "rgba(255, 255, 255, 0.08)";
 
 const formatUsd = (value) => {
@@ -30,9 +30,9 @@ const buildAnnotationLine = (label, value, color, dashPattern = [6, 4]) => ({
     display: true,
     content: `${label}: ${formatUsd(value)}`,
     position: "start",
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-    color: LABEL_COLOR,
-    font: { size: 11, family: FONT_FAMILY },
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    color: "#ffffff",
+    font: { size: 12, family: FONT_FAMILY },
     padding: 4,
   },
 });
@@ -184,7 +184,7 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
               weight: "700",
               family: FONT_FAMILY,
             },
-            padding: 16,
+            padding: 10,
             filter: (item) => item.text.indexOf("Volume") === -1,
           },
         },
@@ -197,7 +197,7 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
             weight: "600",
             family: FONT_FAMILY,
           },
-          padding: { top: 2, bottom: 8 },
+          padding: { top: 0, bottom: 4 },
         },
         tooltip: {
           backgroundColor: TOOLTIP_BG,
@@ -215,10 +215,10 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
       },
       layout: {
         padding: {
-          top: 4,
-          bottom: 20,
-          left: 16,
-          right: 16,
+          top: 2,
+          bottom: 6,
+          left: 12,
+          right: 12,
         },
       },
       scales,
