@@ -1,12 +1,15 @@
 # Crypto Bot — Agent Guide
 
 ## Commands
+
 - `npm run format` — format with Prettier (default config)
 - `npm run deploy` — deploy to Vercel
 - No test framework is configured; there are no tests.
 
 ## Architecture
+
 Telegram bot (Telegraf) deployed as a Vercel serverless function (`api/bot.js`).
+
 - **api/** — Vercel entrypoint; creates bot, registers commands, handles webhook POST.
 - **handlers/** — chart generation: config, URL building (QuickChart), and orchestration via `chartHandler`.
 - **utils/** — shared helpers: HTTP fetches (CoinGecko/CoinMarketCap), formatting, chart utilities, command registration factory.
@@ -15,6 +18,7 @@ Telegram bot (Telegraf) deployed as a Vercel serverless function (`api/bot.js`).
 - Env vars: `TELEGRAM_BOT_TOKEN`, `COINGECKO_API_KEY`, `COINMARKETCAP_API_KEY`.
 
 ## Code Style
+
 - **ES Modules** (`"type": "module"`); use `import`/`export`, include `.js` extensions in relative imports.
 - Node ≥ 24. Prettier with default settings for formatting.
 - Functions are `const` arrow functions, exported individually (no default exports except the Vercel handler).

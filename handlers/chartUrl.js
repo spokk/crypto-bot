@@ -7,21 +7,36 @@ const CHART_DEFAULTS = {
 };
 
 export const buildQuickChartUrl = (chartConfig) => {
-  // Validate input
-  if (!chartConfig || typeof chartConfig !== "object") {
-    throw new Error("chartConfig must be a valid object");
+  if (
+    !chartConfig ||
+    typeof chartConfig !== "object" ||
+    Array.isArray(chartConfig)
+  ) {
+    throw new TypeError("chartConfig must be a valid object");
   }
 
   try {
-    const url = new URL(CHART_DEFAULTS.BASE_URL);
-    url.searchParams.set("v", CHART_DEFAULTS.API_VERSION);
-    url.searchParams.set("width", CHART_DEFAULTS.WIDTH);
-    url.searchParams.set("height", CHART_DEFAULTS.HEIGHT);
-    url.searchParams.set("backgroundColor", CHART_DEFAULTS.BACKGROUND_COLOR);
-    url.searchParams.set("c", JSON.stringify(chartConfig));
+    const { BASE_URL, API_VERSION, WIDTH, HEIGHT, BACKGROUND_COLOR } =
+      CHART_DEFAULTS;
+
+    const url = new URL(BASE_URL);
+
+    const params = {
+      v: API_VERSION,
+      width: WIDTH,
+      height: HEIGHT,
+      backgroundColor: BACKGROUND_COLOR,
+      c: JSON.stringify(chartConfig),
+    };
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.set(key, String(value));
+      }
+    });
 
     return url.toString();
   } catch (error) {
-    throw new Error(`Failed to build chart URL: ${error.message}`);
+    throw new Error("Failed to build chart URL", { cause: error });
   }
 };

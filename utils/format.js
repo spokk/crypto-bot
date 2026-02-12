@@ -46,11 +46,6 @@ const formatPercentage = (num) => {
   return num.toFixed(2) + "%";
 };
 
-const formatCompactUsd = (value) => {
-  if (typeof value !== "number" || isNaN(value)) return "N/A";
-  return new Intl.NumberFormat("en-US", MARKET_CAP_FORMAT).format(value);
-};
-
 const formatSignedPct = (value) => {
   if (typeof value !== "number" || isNaN(value)) return "N/A";
   const sign = value >= 0 ? "+" : "";

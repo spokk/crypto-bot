@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "deploy": "vercel --prod",
-    "format": "prettier --write ."
+    "eslint": "eslint . --ext .js,.mjs,.cjs --fix",
+    "prettier": "prettier --write .",
+    "format": "npm run eslint && npm run prettier"
   },
   "dependencies": {
     "dotenv": "^17.2.4",
@@ -16,6 +18,9 @@
     "node": ">=24"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.0",
+    "globals": "^17.3.0",
     "prettier": "3.8.1"
   }
 }
