@@ -1,80 +1,36 @@
-export const getChangeSymbol = (value) => {
-  if (typeof value !== "number") return "⚪";
-  return value > 0 ? "🟢" : value < 0 ? "🔴" : "⚪";
+// — Constants —————————————————————————————————————————————————————————————————
+
+const SHORT_NAME_MAP = {
+  Bitcoin: "Bitcoin",
+  Ethereum: "Ethereum",
+  "Tether Gold": "Gold",
+  "Kinesis Silver": "Silver",
 };
 
-export const safeFixed = (value, digits = 2) => {
-  if (typeof value !== "number") return "N/A";
-  const num =
-    value >= 1 ? Number(value).toFixed(digits) : trimSmallNumber(value);
-  return value >= 1 ? Number(num).toLocaleString("en-US") : num;
+const MARKET_CAP_FORMAT = {
+  style: "currency",
+  currency: "USD",
+  notation: "compact",
+  maximumFractionDigits: 2,
 };
 
-export const trimSmallNumber = (num, maxDecimals = 8) => {
-  if (typeof num !== "number") return num;
-  if (num === 0) return 0;
-  // Convert to string with up to maxDecimals, remove trailing zeros
-  let str = num.toFixed(maxDecimals);
-  str = str.replace(/\.?0+$/, "");
-  return Number(str);
+const DATE_FORMAT_OPTIONS = {
+  timeZone: "Europe/Kyiv",
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
 };
 
-export const getMarketOverview = (globalMetrics, fearAndGreed) => {
-  const formattedTotalMarketCap = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
-    maximumFractionDigits: 2,
-  }).format(globalMetrics?.quote?.USD?.total_market_cap);
+const CHANGE_PERIODS = [
+  { label: "1h", key: "percent_change_1h" },
+  { label: "24h", key: "percent_change_24h" },
+  { label: "7d", key: "percent_change_7d" },
+  { label: "30d", key: "percent_change_30d" },
+];
 
-  return (
-    `🧠 Fear & Greed Index: ${fearAndGreed?.value} (${fearAndGreed?.value_classification})\n` +
-    `🟠 BTC Dominance: ${safeFixed(globalMetrics?.btc_dominance, 2)}%\n` +
-    `💎 ETH Dominance: ${safeFixed(globalMetrics?.eth_dominance, 2)}%\n` +
-    `💰 Total Market Cap: ${formattedTotalMarketCap}`
-  );
-};
-
-export const formatCryptoMessage = (
-  symbol,
-  data,
-  globalMetrics,
-  fearAndGreed,
-) => {
-  const price = safeFixed(data?.price);
-  const percentChange1h = Number(data?.percent_change_1h).toFixed(2);
-  const percentChange24h = Number(data?.percent_change_24h).toFixed(2);
-  const percentChange7d = Number(data?.percent_change_7d).toFixed(2);
-  const percentChange30d = Number(data?.percent_change_30d).toFixed(2);
-
-  const changeSymbol1h = getChangeSymbol(data?.percent_change_1h);
-  const changeSymbol24h = getChangeSymbol(data?.percent_change_24h);
-  const changeSymbol7d = getChangeSymbol(data?.percent_change_7d);
-  const changeSymbol30d = getChangeSymbol(data?.percent_change_30d);
-
-  const formattedDate = data?.last_updated
-    ? new Date(data.last_updated).toLocaleString("uk-UA", {
-        timeZone: "Europe/Kyiv",
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "N/A";
-
-  return (
-    `🪙 ${symbol}:\n` +
-    `💵 Price: $${price}\n` +
-    `${changeSymbol1h} 1h Change: ${percentChange1h}%\n` +
-    `${changeSymbol24h} 24h Change: ${percentChange24h}%\n` +
-    `${changeSymbol7d} 7d Change: ${percentChange7d}%\n` +
-    `${changeSymbol30d} 30d Change: ${percentChange30d}%\n\n` +
-    `Market overview:\n` +
-    `${getMarketOverview(globalMetrics, fearAndGreed)}\n\n` +
-    `🕒 ${formattedDate}`
-  );
-};
+// — Private helpers ———————————————————————————————————————————————————————————
 
 const formatNumber = (num, decimals = 2) => {
   if (typeof num !== "number" || isNaN(num)) return "-";
@@ -89,6 +45,74 @@ const formatPercentage = (num) => {
   return num.toFixed(2) + "%";
 };
 
+// — Exported helpers ——————————————————————————————————————————————————————————
+
+export const getChangeSymbol = (value) => {
+  if (typeof value !== "number") return "⚪";
+  return value > 0 ? "🟢" : value < 0 ? "🔴" : "⚪";
+};
+
+export const safeFixed = (value, digits = 2) => {
+  if (typeof value !== "number") return "N/A";
+  const num = value >= 1 ? value.toFixed(digits) : trimSmallNumber(value);
+  return value >= 1 ? Number(num).toLocaleString("en-US") : num;
+};
+
+export const trimSmallNumber = (num, maxDecimals = 8) => {
+  if (typeof num !== "number") return num;
+  if (num === 0) return 0;
+  let str = num.toFixed(maxDecimals);
+  str = str.replace(/\.?0+$/, "");
+  return Number(str);
+};
+
+// — Exported message builders —————————————————————————————————————————————————
+
+export const getMarketOverview = (globalMetrics, fearAndGreed) => {
+  const formattedTotalMarketCap = new Intl.NumberFormat(
+    "en-US",
+    MARKET_CAP_FORMAT,
+  ).format(globalMetrics?.quote?.USD?.total_market_cap);
+
+  return [
+    `🧠 Fear & Greed Index: ${fearAndGreed?.value} (${fearAndGreed?.value_classification})`,
+    `🟠 BTC Dominance: ${safeFixed(globalMetrics?.btc_dominance, 2)}%`,
+    `💎 ETH Dominance: ${safeFixed(globalMetrics?.eth_dominance, 2)}%`,
+    `💰 Total Market Cap: ${formattedTotalMarketCap}`,
+  ].join("\n");
+};
+
+export const formatCryptoMessage = (
+  symbol,
+  data,
+  globalMetrics,
+  fearAndGreed,
+) => {
+  const price = safeFixed(data?.price);
+
+  const changeLines = CHANGE_PERIODS.map(({ label, key }) => {
+    const raw = data?.[key];
+    const pct = Number(raw).toFixed(2);
+    const icon = getChangeSymbol(raw);
+    return `${icon} ${label} Change: ${pct}%`;
+  });
+
+  const formattedDate = data?.last_updated
+    ? new Date(data.last_updated).toLocaleString("uk-UA", DATE_FORMAT_OPTIONS)
+    : "N/A";
+
+  return [
+    `🪙 ${symbol}:`,
+    `💵 Price: $${price}`,
+    ...changeLines,
+    "",
+    `Market overview:`,
+    getMarketOverview(globalMetrics, fearAndGreed),
+    "",
+    `🕒 ${formattedDate}`,
+  ].join("\n");
+};
+
 export const formatTopCryptosMessage = (
   topData,
   globalMetrics,
@@ -98,19 +122,7 @@ export const formatTopCryptosMessage = (
     return "No data available.";
   }
 
-  // --- Helpers --------------------------------------------------
-
-  const shortName = (name) => {
-    const map = {
-      Bitcoin: "Bitcoin",
-      Ethereum: "Ethereum",
-      "Tether Gold": "Gold",
-      "Kinesis Silver": "Silver",
-    };
-    return map[name] ?? null;
-  };
-
-  // --- Normalize rows -------------------------------------------
+  const shortName = (name) => SHORT_NAME_MAP[name] ?? null;
 
   const rows = topData.map((coin) => {
     const name = shortName(coin.name) ?? coin.name;
@@ -120,8 +132,6 @@ export const formatTopCryptosMessage = (
 
     return { name, price, change, changeIcon };
   });
-
-  // --- Column widths (hard limits for Telegram) -----------------
 
   const MAX_NAME_WIDTH = 8;
   const MAX_PRICE_WIDTH = 10;
@@ -141,8 +151,6 @@ export const formatTopCryptosMessage = (
       MAX_CHANGE_WIDTH,
     ),
   };
-
-  // --- Build table ----------------------------------------------
 
   const columnSeparator = " │ ";
 
@@ -174,8 +182,6 @@ export const formatTopCryptosMessage = (
   });
 
   msg += "</pre>";
-
-  // --- Final message --------------------------------------------
 
   return `<b>Market overview:</b>\n${msg}\n\n${getMarketOverview(
     globalMetrics,

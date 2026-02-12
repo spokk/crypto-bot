@@ -23,13 +23,14 @@ const registerCryptoCommand = registerCryptoCommandFactory(
   formatCryptoMessage,
 );
 
-bot.telegram.setMyCommands([
-  { command: "eth", description: "Current price of Ethereum (ETH)" },
-  { command: "btc", description: "Current price of Bitcoin (BTC)" },
-  { command: "gold", description: "Current price of Gold (XAUt)" },
-  { command: "silver", description: "Current price of Silver (KAG)" },
+const botCommands = [
+  ...cryptoList.map(({ command, name }) => ({
+    command,
+    description: `Current price of ${name}`,
+  })),
   { command: "top", description: "General summary of market overview" },
-]);
+];
+bot.telegram.setMyCommands(botCommands);
 
 // Register all crypto commands
 cryptoList.forEach(({ command, symbol, name }) => {
@@ -39,15 +40,19 @@ cryptoList.forEach(({ command, symbol, name }) => {
 bot.command("top", async (ctx) => {
   ctx.deleteMessage(ctx.message.message_id).catch(() => {});
 
-  const [topData, globalMetrics, fearAndGreed] = await Promise.all([
-    fetchCoinGeckoTopData(),
-    fetchGlobalMetrics(),
-    fetchFearAndGreed(),
-  ]);
+  try {
+    const [topData, globalMetrics, fearAndGreed] = await Promise.all([
+      fetchCoinGeckoTopData(),
+      fetchGlobalMetrics(),
+      fetchFearAndGreed(),
+    ]);
 
-  const reply = formatTopCryptosMessage(topData, globalMetrics, fearAndGreed);
+    const reply = formatTopCryptosMessage(topData, globalMetrics, fearAndGreed);
 
-  await ctx.replyWithHTML(reply, { disable_notification: true });
+    await ctx.replyWithHTML(reply, { disable_notification: true });
+  } catch (error) {
+    console.error("Failed to fetch data for top:", error);
+  }
 });
 
 export default async (req, res) => {

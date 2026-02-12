@@ -38,7 +38,7 @@ export const registerCryptoCommandFactory =
           await ctx.reply(message, { disable_notification: true });
         }
       } catch (error) {
-        console.error(`Помилка при отриманні даних для ${symbol}:`, error);
+        console.error(`Failed to fetch data for ${symbol}:`, error);
       }
     });
   };

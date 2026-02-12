@@ -1,3 +1,30 @@
+const TICK_COLOR = "#cccccc";
+const LABEL_COLOR = "#e0e0e0";
+const GRID_COLOR = "rgba(255, 255, 255, 0.05)";
+const FONT_FAMILY = "Segoe UI, sans-serif";
+
+const LINE_COLOR = "#4fc3f7";
+const FILL_COLOR = "rgba(0, 122, 204, 0.1)";
+const TOOLTIP_BG = "#2c2c3a";
+
+const buildYScale = (position, paddedMin, paddedMax, showGrid) => ({
+  position,
+  min: paddedMin,
+  max: paddedMax,
+  ticks: {
+    color: TICK_COLOR,
+    font: {
+      size: 16,
+      family: FONT_FAMILY,
+      weight: "700",
+    },
+    padding: 6,
+  },
+  grid: showGrid
+    ? { color: GRID_COLOR, borderColor: "transparent" }
+    : { display: false },
+});
+
 export const getChartConfig = (symbol, labels, prices, coinData) => {
   const numericPrices = prices.map(Number);
   let min = Math.min(...numericPrices);
@@ -32,10 +59,10 @@ export const getChartConfig = (symbol, labels, prices, coinData) => {
           data: prices,
           fill: {
             target: "origin",
-            above: "rgba(0, 122, 204, 0.1)",
+            above: FILL_COLOR,
           },
-          borderColor: "#4fc3f7",
-          pointBackgroundColor: "#4fc3f7",
+          borderColor: LINE_COLOR,
+          pointBackgroundColor: LINE_COLOR,
           borderWidth: 2,
           tension: 0.4,
           pointRadius: 2,
@@ -51,17 +78,17 @@ export const getChartConfig = (symbol, labels, prices, coinData) => {
         legend: {
           display: true,
           labels: {
-            color: "#e0e0e0",
+            color: LABEL_COLOR,
             font: {
               size: 18,
               weight: "700",
-              family: "Segoe UI, sans-serif",
+              family: FONT_FAMILY,
             },
             padding: 16,
           },
         },
         tooltip: {
-          backgroundColor: "#2c2c3a",
+          backgroundColor: TOOLTIP_BG,
           titleColor: "#ffffff",
           bodyColor: "#dddddd",
           borderColor: "#555",
@@ -82,57 +109,24 @@ export const getChartConfig = (symbol, labels, prices, coinData) => {
       scales: {
         x: {
           ticks: {
-            color: "#cccccc",
+            color: TICK_COLOR,
             font: {
               size: 13,
-              family: "Segoe UI, sans-serif",
+              family: FONT_FAMILY,
             },
             maxRotation: 45,
             minRotation: 30,
             autoSkip: true,
             maxTicksLimit: 16,
-            showLastLabel: true, // Always show last tick
+            showLastLabel: true,
           },
           grid: {
-            color: "rgba(255, 255, 255, 0.05)",
+            color: GRID_COLOR,
             borderColor: "transparent",
           },
         },
-        y: {
-          position: "right",
-          min: paddedMin,
-          max: paddedMax,
-          ticks: {
-            color: "#cccccc",
-            font: {
-              size: 16,
-              family: "Segoe UI, sans-serif",
-              weight: "700",
-            },
-            padding: 6,
-          },
-          grid: {
-            color: "rgba(255, 255, 255, 0.05)",
-            borderColor: "transparent",
-          },
-        },
-        y_left: {
-          position: "left",
-          min: paddedMin,
-          max: paddedMax,
-          ticks: {
-            color: "#cccccc",
-            font: {
-              size: 16,
-              family: "Segoe UI, sans-serif",
-              weight: "700",
-            },
-            padding: 6,
-          },
-          grid: {
-            display: false, // Hide left grid lines to avoid double grid
-          },
-        },
+        y: buildYScale("right", paddedMin, paddedMax, true),
+        y_left: buildYScale("left", paddedMin, paddedMax, false),
       },
     },
   };
