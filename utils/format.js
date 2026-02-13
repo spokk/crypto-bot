@@ -115,7 +115,7 @@ export const formatCryptoMessage = (
         : "-";
     const low =
       typeof range24.low24 === "number" ? `$${safeFixed(range24.low24)}` : "-";
-    details.push(`📈 ${high}  ·  📉 ${low}`);
+    details.push(`⬆️ High ${high}  ·  ⬇️ Low ${low}`);
   }
 
   const formattedDate = data?.last_updated
@@ -127,6 +127,7 @@ export const formatCryptoMessage = (
     "",
     changeLine1,
     changeLine2,
+    "",
     ...details,
     "",
     getMarketOverview(globalMetrics, fearAndGreed),
