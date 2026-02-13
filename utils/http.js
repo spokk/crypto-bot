@@ -73,6 +73,9 @@ export const fetchCoinGeckoCoinData = async (coinId) =>
     "Coin not found",
   );
 
+export const fetchCoinGeckoGlobal = async () =>
+  fetchCoinGecko("/global", "Global data not found");
+
 export const fetchCoinGeckoTopData = async () =>
   fetchCoinGecko(
     "/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,tether-gold,kinesis-silver&order=market_cap_desc&per_page=20&sparkline=false",

@@ -1,4 +1,5 @@
 import { chartHandler } from "../handlers/chartHandler.js";
+import { fetchCoinGeckoGlobal } from "./http.js";
 
 export const registerCryptoCommandFactory =
   (
@@ -13,12 +14,13 @@ export const registerCryptoCommandFactory =
       ctx.deleteMessage(ctx.message.message_id).catch(() => {});
 
       try {
-        const [data, chartResult, globalMetrics, fearAndGreed] =
+        const [data, chartResult, globalMetrics, fearAndGreed, cgGlobal] =
           await Promise.all([
             fetchCryptoQuote(symbol),
             chartHandler(symbol),
             fetchGlobalMetrics(),
             fetchFearAndGreed(),
+            fetchCoinGeckoGlobal(),
           ]);
 
         const message = formatCryptoMessage(
@@ -27,6 +29,7 @@ export const registerCryptoCommandFactory =
           globalMetrics,
           fearAndGreed,
           { high24: chartResult.high24, low24: chartResult.low24 },
+          cgGlobal,
         );
 
         if (chartResult?.url) {

@@ -6,6 +6,7 @@ import {
   fetchFearAndGreed,
   fetchGlobalMetrics,
   fetchCoinGeckoTopData,
+  fetchCoinGeckoGlobal,
 } from "../utils/http.js";
 import {
   formatCryptoMessage,
@@ -41,13 +42,20 @@ bot.command("top", async (ctx) => {
   ctx.deleteMessage(ctx.message.message_id).catch(() => {});
 
   try {
-    const [topData, globalMetrics, fearAndGreed] = await Promise.all([
-      fetchCoinGeckoTopData(),
-      fetchGlobalMetrics(),
-      fetchFearAndGreed(),
-    ]);
+    const [topData, globalMetrics, fearAndGreed, cgGlobal] =
+      await Promise.all([
+        fetchCoinGeckoTopData(),
+        fetchGlobalMetrics(),
+        fetchFearAndGreed(),
+        fetchCoinGeckoGlobal(),
+      ]);
 
-    const reply = formatTopCryptosMessage(topData, globalMetrics, fearAndGreed);
+    const reply = formatTopCryptosMessage(
+      topData,
+      globalMetrics,
+      fearAndGreed,
+      cgGlobal,
+    );
 
     await ctx.replyWithHTML(reply, { disable_notification: true });
   } catch (error) {

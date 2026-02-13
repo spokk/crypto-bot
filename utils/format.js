@@ -75,18 +75,33 @@ export const trimSmallNumber = (num, maxDecimals = 8) => {
 
 // — Exported message builders —————————————————————————————————————————————————
 
-export const getMarketOverview = (globalMetrics, fearAndGreed) => {
+export const getMarketOverview = (globalMetrics, fearAndGreed, cgGlobal) => {
   const formattedTotalMarketCap = new Intl.NumberFormat(
     "en-US",
     MARKET_CAP_FORMAT,
   ).format(globalMetrics?.quote?.USD?.total_market_cap);
 
-  return [
+  const lines = [
     `🧠 Fear & Greed: ${fearAndGreed?.value} (${fearAndGreed?.value_classification})`,
-    `🟠 BTC Dominance: ${safeFixed(globalMetrics?.btc_dominance, 2)}%`,
-    `💎 ETH Dominance: ${safeFixed(globalMetrics?.eth_dominance, 2)}%`,
+    `🟠 BTC ${safeFixed(globalMetrics?.btc_dominance, 2)}%  ·  💎 ETH ${safeFixed(globalMetrics?.eth_dominance, 2)}%`,
     `💰 Total Market Cap: ${formattedTotalMarketCap}`,
-  ].join("\n");
+  ];
+
+  const globalData = cgGlobal?.data;
+  if (globalData) {
+    const vol = new Intl.NumberFormat("en-US", MARKET_CAP_FORMAT).format(
+      globalData.total_volume?.usd,
+    );
+    lines.push(`📊 24h Volume: ${vol}`);
+
+    const capChange = globalData.market_cap_change_percentage_24h_usd;
+    if (typeof capChange === "number") {
+      const sign = capChange >= 0 ? "+" : "";
+      lines.push(`📈 Market Cap 24h: ${sign}${capChange.toFixed(2)}%`);
+    }
+  }
+
+  return lines.join("\n");
 };
 
 export const formatCryptoMessage = (
@@ -95,6 +110,7 @@ export const formatCryptoMessage = (
   globalMetrics,
   fearAndGreed,
   range24 = {},
+  cgGlobal,
 ) => {
   const price = safeFixed(data?.price);
 
@@ -130,7 +146,7 @@ export const formatCryptoMessage = (
     "",
     ...details,
     "",
-    getMarketOverview(globalMetrics, fearAndGreed),
+    getMarketOverview(globalMetrics, fearAndGreed, cgGlobal),
     "",
     `🕒 ${formattedDate}`,
   ].join("\n");
@@ -140,6 +156,7 @@ export const formatTopCryptosMessage = (
   topData,
   globalMetrics,
   fearAndGreed,
+  cgGlobal,
 ) => {
   if (!Array.isArray(topData) || topData.length === 0) {
     return "No data available.";
@@ -209,5 +226,6 @@ export const formatTopCryptosMessage = (
   return `<b>Market overview:</b>\n${msg}\n\n${getMarketOverview(
     globalMetrics,
     fearAndGreed,
+    cgGlobal,
   )}`;
 };
