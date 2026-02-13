@@ -82,10 +82,17 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
       : "";
 
   // Annotation lines for 7d high, low, and average
+  const lastPrice = numericPrices[numericPrices.length - 1];
   const annotations = {
     highLine: buildAnnotationLine("7d High", max, ANNOTATION_COLOR),
     lowLine: buildAnnotationLine("7d Low", min, ANNOTATION_COLOR),
     avgLine: buildAnnotationLine("7d Avg", avg, AVG_COLOR, [4, 4]),
+    lastPriceLine: buildAnnotationLine(
+      "Now",
+      lastPrice,
+      LINE_COLOR,
+      [3, 3],
+    ),
   };
 
   // Datasets
@@ -100,7 +107,7 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
       borderColor: LINE_COLOR,
       pointBackgroundColor: LINE_COLOR,
       borderWidth: 2,
-      tension: 0.4,
+      tension: 0.1,
       pointRadius: 0,
       pointHoverRadius: 5,
       yAxisID: "y",
