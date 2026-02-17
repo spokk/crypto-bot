@@ -7,36 +7,15 @@ const CHART_DEFAULTS = {
 };
 
 export const buildQuickChartUrl = (chartConfig) => {
-  if (
-    !chartConfig ||
-    typeof chartConfig !== "object" ||
-    Array.isArray(chartConfig)
-  ) {
-    throw new TypeError("chartConfig must be a valid object");
-  }
+  const { BASE_URL, API_VERSION, WIDTH, HEIGHT, BACKGROUND_COLOR } =
+    CHART_DEFAULTS;
 
-  try {
-    const { BASE_URL, API_VERSION, WIDTH, HEIGHT, BACKGROUND_COLOR } =
-      CHART_DEFAULTS;
+  const url = new URL(BASE_URL);
+  url.searchParams.set("v", API_VERSION);
+  url.searchParams.set("width", WIDTH);
+  url.searchParams.set("height", HEIGHT);
+  url.searchParams.set("backgroundColor", BACKGROUND_COLOR);
+  url.searchParams.set("c", JSON.stringify(chartConfig));
 
-    const url = new URL(BASE_URL);
-
-    const params = {
-      v: API_VERSION,
-      width: WIDTH,
-      height: HEIGHT,
-      backgroundColor: BACKGROUND_COLOR,
-      c: JSON.stringify(chartConfig),
-    };
-
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        url.searchParams.set(key, String(value));
-      }
-    });
-
-    return url.toString();
-  } catch (error) {
-    throw new Error("Failed to build chart URL", { cause: error });
-  }
+  return url.toString();
 };

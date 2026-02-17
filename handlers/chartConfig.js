@@ -1,22 +1,21 @@
-const TICK_COLOR = "#e0e0e0";
-const LABEL_COLOR = "#f0f0f0";
-const GRID_COLOR = "rgba(255, 255, 255, 0.08)";
-const FONT_FAMILY = "Segoe UI, sans-serif";
-
-const LINE_COLOR = "#4fc3f7";
-const FILL_COLOR = "rgba(0, 122, 204, 0.1)";
-const TOOLTIP_BG = "#2c2c3a";
-
-const UP_COLOR = "#26a69a";
-const DOWN_COLOR = "#ef5350";
-const ANNOTATION_COLOR = "rgba(255, 255, 255, 0.45)";
-const AVG_COLOR = "rgba(255, 193, 7, 0.6)";
-const VOLUME_COLOR = "rgba(255, 255, 255, 0.08)";
+const THEME = {
+  tick: "#e0e0e0",
+  label: "#f0f0f0",
+  grid: "rgba(255, 255, 255, 0.08)",
+  font: "Segoe UI, sans-serif",
+  line: "#4fc3f7",
+  fill: "rgba(0, 122, 204, 0.1)",
+  tooltip: "#2c2c3a",
+  up: "#26a69a",
+  down: "#ef5350",
+  annotation: "rgba(255, 255, 255, 0.45)",
+  avg: "rgba(255, 193, 7, 0.6)",
+  volume: "rgba(255, 255, 255, 0.08)",
+};
 
 const formatUsd = (value) => {
   if (typeof value !== "number") return "N/A";
-  if (value >= 1) return "$" + value.toLocaleString("en-US");
-  return "$" + value;
+  return value >= 1 ? "$" + value.toLocaleString("en-US") : "$" + value;
 };
 
 const buildAnnotationLine = (label, value, color, dashPattern = [6, 4]) => ({
@@ -32,7 +31,7 @@ const buildAnnotationLine = (label, value, color, dashPattern = [6, 4]) => ({
     position: "start",
     backgroundColor: "rgba(0, 0, 0, 0.7)",
     color: "#ffffff",
-    font: { size: 12, family: FONT_FAMILY },
+    font: { size: 12, family: THEME.font },
     padding: 4,
   },
 });
@@ -42,17 +41,13 @@ const buildYScale = (position, paddedMin, paddedMax, showGrid) => ({
   min: paddedMin,
   max: paddedMax,
   ticks: {
-    color: TICK_COLOR,
-    font: {
-      size: 16,
-      family: FONT_FAMILY,
-      weight: "700",
-    },
+    color: THEME.tick,
+    font: { size: 16, family: THEME.font, weight: "700" },
     padding: 6,
     callback: (val) => formatUsd(val),
   },
   grid: showGrid
-    ? { color: GRID_COLOR, borderColor: "transparent" }
+    ? { color: THEME.grid, borderColor: "transparent" }
     : { display: false },
 });
 
@@ -61,51 +56,32 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
   const min = Math.min(...numericPrices);
   const max = Math.max(...numericPrices);
   const avg = numericPrices.reduce((a, b) => a + b, 0) / numericPrices.length;
+  const lastPrice = numericPrices.at(-1);
 
-  // Add 5% padding
   const range = max - min;
-  let paddedMin = min - range * 0.05;
-  let paddedMax = max + range * 0.05;
-
-  // Round to nearest "nice" number
   const magnitude = Math.pow(10, Math.floor(Math.log10(range)) - 1);
-  paddedMin = Math.floor(paddedMin / magnitude) * magnitude;
-  paddedMax = Math.ceil(paddedMax / magnitude) * magnitude;
+  const paddedMin = Math.floor((min - range * 0.05) / magnitude) * magnitude;
+  const paddedMax = Math.ceil((max + range * 0.05) / magnitude) * magnitude;
 
-  const high24 = coinData?.market_data?.high_24h?.usd;
-  const low24 = coinData?.market_data?.low_24h?.usd;
-  const change24 = coinData?.market_data?.price_change_percentage_24h;
+  const marketData = coinData?.market_data;
+  const high24 = marketData?.high_24h?.usd;
+  const low24 = marketData?.low_24h?.usd;
+  const change24 = marketData?.price_change_percentage_24h;
 
   const changeStr =
     typeof change24 === "number"
       ? `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`
       : "";
 
-  // Annotation lines for 7d high, low, and average
-  const lastPrice = numericPrices[numericPrices.length - 1];
-  const annotations = {
-    highLine: buildAnnotationLine("7d High", max, ANNOTATION_COLOR),
-    lowLine: buildAnnotationLine("7d Low", min, ANNOTATION_COLOR),
-    avgLine: buildAnnotationLine("7d Avg", avg, AVG_COLOR, [4, 4]),
-    lastPriceLine: buildAnnotationLine(
-      "Now",
-      lastPrice,
-      LINE_COLOR,
-      [3, 3],
-    ),
-  };
+  const hasVolumes = volumes?.length > 0;
 
-  // Datasets
   const datasets = [
     {
       label: `${symbol.toUpperCase()} ${changeStr}`,
       data: prices,
-      fill: {
-        target: "origin",
-        above: FILL_COLOR,
-      },
-      borderColor: LINE_COLOR,
-      pointBackgroundColor: LINE_COLOR,
+      fill: { target: "origin", above: THEME.fill },
+      borderColor: THEME.line,
+      pointBackgroundColor: THEME.line,
       borderWidth: 2,
       tension: 0.1,
       pointRadius: 0,
@@ -113,17 +89,13 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
       yAxisID: "y",
       segment: {
         borderColor: (ctx) =>
-          ctx.p0.parsed.y <= ctx.p1.parsed.y ? UP_COLOR : DOWN_COLOR,
+          ctx.p0.parsed.y <= ctx.p1.parsed.y ? THEME.up : THEME.down,
       },
     },
-  ];
-
-  // Legend entries for annotation lines
-  datasets.push(
     {
       label: "7d High / Low",
       data: [],
-      borderColor: ANNOTATION_COLOR,
+      borderColor: THEME.annotation,
       borderDash: [6, 4],
       borderWidth: 1.5,
       pointRadius: 0,
@@ -132,21 +104,20 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
     {
       label: "7d Avg",
       data: [],
-      borderColor: AVG_COLOR,
+      borderColor: THEME.avg,
       borderDash: [4, 4],
       borderWidth: 1.5,
       pointRadius: 0,
       fill: false,
     },
-  );
+  ];
 
-  // Volume bars on secondary axis
-  if (volumes && volumes.length > 0) {
+  if (hasVolumes) {
     datasets.push({
       label: "Volume",
       data: volumes,
       type: "bar",
-      backgroundColor: VOLUME_COLOR,
+      backgroundColor: THEME.volume,
       borderColor: "transparent",
       borderWidth: 0,
       yAxisID: "volume",
@@ -157,37 +128,28 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
   const scales = {
     x: {
       ticks: {
-        color: TICK_COLOR,
-        font: {
-          size: 13,
-          family: FONT_FAMILY,
-        },
+        color: THEME.tick,
+        font: { size: 13, family: THEME.font },
         maxRotation: 0,
         autoSkip: true,
         maxTicksLimit: 8,
       },
-      grid: {
-        color: GRID_COLOR,
-        borderColor: "transparent",
-      },
+      grid: { color: THEME.grid, borderColor: "transparent" },
     },
     y: buildYScale("right", paddedMin, paddedMax, true),
     y_left: buildYScale("left", paddedMin, paddedMax, false),
   };
 
-  // Volume axis — takes up bottom 20% of chart area, hidden ticks
-  if (volumes && volumes.length > 0) {
-    const maxVolume = Math.max(...volumes);
+  if (hasVolumes) {
     scales.volume = {
       position: "left",
       min: 0,
-      max: maxVolume * 5,
+      max: Math.max(...volumes) * 5,
       display: false,
       grid: { display: false },
     };
   }
 
-  // Title subtitle with 24h high/low
   const subtitleParts = [];
   if (typeof high24 === "number")
     subtitleParts.push(`24h High: ${formatUsd(high24)}`);
@@ -196,10 +158,7 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
 
   return {
     type: "line",
-    data: {
-      labels,
-      datasets,
-    },
+    data: { labels, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -207,49 +166,42 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
         legend: {
           display: true,
           labels: {
-            color: LABEL_COLOR,
-            font: {
-              size: 18,
-              weight: "700",
-              family: FONT_FAMILY,
-            },
+            color: THEME.label,
+            font: { size: 18, weight: "700", family: THEME.font },
             padding: 10,
-            filter: (item) => item.text.indexOf("Volume") === -1,
+            filter: (item) => !item.text.includes("Volume"),
           },
         },
         title: {
           display: subtitleParts.length > 0,
           text: subtitleParts.join("  |  "),
           color: "#e0e0e0",
-          font: {
-            size: 15,
-            weight: "600",
-            family: FONT_FAMILY,
-          },
+          font: { size: 15, weight: "600", family: THEME.font },
           padding: { top: 0, bottom: 4 },
         },
         tooltip: {
-          backgroundColor: TOOLTIP_BG,
+          backgroundColor: THEME.tooltip,
           titleColor: "#ffffff",
           bodyColor: "#dddddd",
           borderColor: "#555",
           borderWidth: 1,
-          titleFont: {
-            weight: "600",
-          },
+          titleFont: { weight: "600" },
         },
         annotation: {
-          annotations,
+          annotations: {
+            highLine: buildAnnotationLine("7d High", max, THEME.annotation),
+            lowLine: buildAnnotationLine("7d Low", min, THEME.annotation),
+            avgLine: buildAnnotationLine("7d Avg", avg, THEME.avg, [4, 4]),
+            lastPriceLine: buildAnnotationLine(
+              "Now",
+              lastPrice,
+              THEME.line,
+              [3, 3],
+            ),
+          },
         },
       },
-      layout: {
-        padding: {
-          top: 2,
-          bottom: 6,
-          left: 12,
-          right: 12,
-        },
-      },
+      layout: { padding: { top: 2, bottom: 6, left: 12, right: 12 } },
       scales,
     },
   };

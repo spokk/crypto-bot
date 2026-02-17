@@ -2,53 +2,39 @@ import "dotenv/config";
 import { Telegraf } from "telegraf";
 
 import {
-  fetchCryptoQuote,
   fetchFearAndGreed,
   fetchGlobalMetrics,
   fetchCoinGeckoTopData,
   fetchCoinGeckoGlobal,
 } from "../utils/http.js";
-import {
-  formatCryptoMessage,
-  formatTopCryptosMessage,
-} from "../utils/format.js";
-import { registerCryptoCommandFactory } from "../utils/registerCryptoCommand.js";
+import { formatTopCryptosMessage } from "../utils/format.js";
+import { registerCryptoCommand } from "../utils/registerCryptoCommand.js";
 import { cryptoList } from "../data/cryptoList.js";
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-const registerCryptoCommand = registerCryptoCommandFactory(
-  bot,
-  fetchCryptoQuote,
-  fetchFearAndGreed,
-  fetchGlobalMetrics,
-  formatCryptoMessage,
-);
 
-const botCommands = [
+bot.telegram.setMyCommands([
   ...cryptoList.map(({ command, name }) => ({
     command,
     description: `Current price of ${name}`,
   })),
   { command: "top", description: "General summary of market overview" },
-];
-bot.telegram.setMyCommands(botCommands);
+]);
 
-// Register all crypto commands
 cryptoList.forEach(({ command, symbol, name }) => {
-  registerCryptoCommand(command, symbol, name);
+  registerCryptoCommand(bot, command, symbol, name);
 });
 
 bot.command("top", async (ctx) => {
   ctx.deleteMessage(ctx.message.message_id).catch(() => {});
 
   try {
-    const [topData, globalMetrics, fearAndGreed, cgGlobal] =
-      await Promise.all([
-        fetchCoinGeckoTopData(),
-        fetchGlobalMetrics(),
-        fetchFearAndGreed(),
-        fetchCoinGeckoGlobal(),
-      ]);
+    const [topData, globalMetrics, fearAndGreed, cgGlobal] = await Promise.all([
+      fetchCoinGeckoTopData(),
+      fetchGlobalMetrics(),
+      fetchFearAndGreed(),
+      fetchCoinGeckoGlobal(),
+    ]);
 
     const reply = formatTopCryptosMessage(
       topData,

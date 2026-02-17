@@ -1,42 +1,48 @@
 const CMC_BASE_URL = "https://pro-api.coinmarketcap.com";
 const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3";
 
-const fetchCMC = async (path, errorMsg) => {
-  const response = await fetch(`${CMC_BASE_URL}${path}`, {
-    method: "GET",
-    headers: {
-      "X-CMC_PRO_API_KEY": process.env.COINMARKETCAP_API_KEY,
-      Accept: "application/json",
-    },
-  });
-  const data = await response.json();
+const cmcHeaders = () => ({
+  "X-CMC_PRO_API_KEY": process.env.COINMARKETCAP_API_KEY,
+  Accept: "application/json",
+});
 
-  if (!data.data) {
-    console.error("CoinMarketCap API response:", JSON.stringify(data, null, 2));
-    throw new Error(errorMsg);
-  }
+const geckoHeaders = () => ({
+  "x-cg-demo-api-key": process.env.COINGECKO_API_KEY,
+  Accept: "application/json",
+});
 
-  return data.data;
-};
-
-const fetchCoinGecko = async (path, errorMsg) => {
-  const response = await fetch(`${COINGECKO_BASE_URL}${path}`, {
-    headers: {
-      "x-cg-demo-api-key": process.env.COINGECKO_API_KEY,
-      Accept: "application/json",
-    },
-  });
+const fetchJson = async (url, headers, errorMsg) => {
+  const response = await fetch(url, { headers });
 
   if (!response.ok) throw new Error(errorMsg);
 
   return await response.json();
 };
 
+const fetchCMC = async (url, errorMsg) => {
+  const json = await fetchJson(url, cmcHeaders(), errorMsg);
+
+  if (!json.data) {
+    console.error("CoinMarketCap API response:", JSON.stringify(json, null, 2));
+    throw new Error(errorMsg);
+  }
+
+  return json.data;
+};
+
+const buildUrl = (base, path, params) => {
+  const url = new URL(`${base}${path}`);
+  if (params) {
+    url.search = new URLSearchParams(params).toString();
+  }
+  return url;
+};
+
 export const fetchCryptoQuote = async (symbol) => {
-  const data = await fetchCMC(
-    `/v1/cryptocurrency/quotes/latest?symbol=${symbol}`,
-    `No data for symbol: ${symbol}`,
-  );
+  const url = buildUrl(CMC_BASE_URL, "/v1/cryptocurrency/quotes/latest", {
+    symbol,
+  });
+  const data = await fetchCMC(url, `No data for symbol: ${symbol}`);
 
   if (!data[symbol]) {
     throw new Error(`No data for symbol: ${symbol}`);
@@ -46,14 +52,21 @@ export const fetchCryptoQuote = async (symbol) => {
 };
 
 export const fetchFearAndGreed = async () =>
-  fetchCMC("/v3/fear-and-greed/latest", "No data for fear and greed index");
+  fetchCMC(
+    buildUrl(CMC_BASE_URL, "/v3/fear-and-greed/latest"),
+    "No data for fear and greed index",
+  );
 
 export const fetchGlobalMetrics = async () =>
-  fetchCMC("/v1/global-metrics/quotes/latest", "No data for global metrics");
+  fetchCMC(
+    buildUrl(CMC_BASE_URL, "/v1/global-metrics/quotes/latest"),
+    "No data for global metrics",
+  );
 
 export const getCoinGeckoCoinList = async (symbol) =>
-  fetchCoinGecko(
-    `/search?query=${symbol}`,
+  fetchJson(
+    buildUrl(COINGECKO_BASE_URL, "/search", { query: symbol }),
+    geckoHeaders(),
     "Failed to fetch CoinGecko coin list",
   );
 
@@ -62,22 +75,45 @@ export const fetchCoinGeckoMarketChart = async (
   days = 7,
   vsCurrency = "usd",
 ) =>
-  fetchCoinGecko(
-    `/coins/${coinId}/market_chart?vs_currency=${vsCurrency}&days=${days}`,
+  fetchJson(
+    buildUrl(COINGECKO_BASE_URL, `/coins/${coinId}/market_chart`, {
+      vs_currency: vsCurrency,
+      days,
+    }),
+    geckoHeaders(),
     "Coin not found",
   );
 
 export const fetchCoinGeckoCoinData = async (coinId) =>
-  fetchCoinGecko(
-    `/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`,
+  fetchJson(
+    buildUrl(COINGECKO_BASE_URL, `/coins/${coinId}`, {
+      localization: "false",
+      tickers: "false",
+      market_data: "true",
+      community_data: "false",
+      developer_data: "false",
+      sparkline: "false",
+    }),
+    geckoHeaders(),
     "Coin not found",
   );
 
 export const fetchCoinGeckoGlobal = async () =>
-  fetchCoinGecko("/global", "Global data not found");
+  fetchJson(
+    buildUrl(COINGECKO_BASE_URL, "/global"),
+    geckoHeaders(),
+    "Global data not found",
+  );
 
 export const fetchCoinGeckoTopData = async () =>
-  fetchCoinGecko(
-    "/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,tether-gold,kinesis-silver&order=market_cap_desc&per_page=20&sparkline=false",
+  fetchJson(
+    buildUrl(COINGECKO_BASE_URL, "/coins/markets", {
+      vs_currency: "usd",
+      ids: "bitcoin,ethereum,tether-gold,kinesis-silver",
+      order: "market_cap_desc",
+      per_page: "20",
+      sparkline: "false",
+    }),
+    geckoHeaders(),
     "Top coins not found",
   );
