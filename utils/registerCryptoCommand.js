@@ -7,15 +7,21 @@ import {
 } from "./http.js";
 import { formatCryptoMessage } from "./format.js";
 
-export const registerCryptoCommand = (bot, command, symbol, displayName) => {
+export const registerCryptoCommand = (
+  bot,
+  command,
+  symbol,
+  geckoId,
+  displayName,
+) => {
   bot.command(command, async (ctx) => {
-    ctx.deleteMessage(ctx.message.message_id).catch(() => {});
+    ctx.api.deleteMessage(ctx.chat.id, ctx.msg.message_id).catch(() => {});
 
     try {
       const [data, chartResult, globalMetrics, fearAndGreed, cgGlobal] =
         await Promise.all([
           fetchCryptoQuote(symbol),
-          chartHandler(symbol),
+          chartHandler(symbol, geckoId),
           fetchGlobalMetrics(),
           fetchFearAndGreed(),
           fetchCoinGeckoGlobal(),

@@ -63,13 +63,6 @@ export const fetchGlobalMetrics = async () =>
     "No data for global metrics",
   );
 
-export const getCoinGeckoCoinList = async (symbol) =>
-  fetchJson(
-    buildUrl(COINGECKO_BASE_URL, "/search", { query: symbol }),
-    geckoHeaders(),
-    "Failed to fetch CoinGecko coin list",
-  );
-
 export const fetchCoinGeckoMarketChart = async (
   coinId,
   days = 7,

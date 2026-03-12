@@ -1,5 +1,4 @@
 import {
-  getCoinGeckoCoinList,
   fetchCoinGeckoMarketChart,
   fetchCoinGeckoCoinData,
 } from "../utils/http.js";
@@ -11,19 +10,10 @@ import {
 import { getChartConfig } from "./chartConfig.js";
 import { buildQuickChartUrl } from "./chartUrl.js";
 
-export const chartHandler = async (symbol) => {
-  const { coins } = await getCoinGeckoCoinList(symbol);
-  const coin = coins.find(
-    (c) => c.symbol.toLowerCase() === symbol.toLowerCase(),
-  );
-
-  if (!coin) {
-    throw new Error(`Coin with symbol "${symbol}" not found`);
-  }
-
+export const chartHandler = async (symbol, geckoId) => {
   const [chart, coinData] = await Promise.all([
-    fetchCoinGeckoMarketChart(coin.id),
-    fetchCoinGeckoCoinData(coin.id),
+    fetchCoinGeckoMarketChart(geckoId),
+    fetchCoinGeckoCoinData(geckoId),
   ]);
 
   const prices = formatPrices(chart.prices);
