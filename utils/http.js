@@ -11,12 +11,19 @@ const geckoHeaders = () => ({
   Accept: "application/json",
 });
 
-const fetchJson = async (url, headers, errorMsg) => {
+const fetchJson = async (url, headers = {}, errorMsg = "Request failed") => {
   const response = await fetch(url, { headers });
 
-  if (!response.ok) throw new Error(errorMsg);
+  if (!response.ok) {
+    let body = "";
+    try {
+      body = await response.text();
+    } catch {}
 
-  return await response.json();
+    throw new Error(`${errorMsg} (status ${response.status}) ${body}`);
+  }
+
+  return response.json();
 };
 
 const fetchCMC = async (url, errorMsg) => {
@@ -96,6 +103,20 @@ export const fetchCoinGeckoGlobal = async () =>
     buildUrl(COINGECKO_BASE_URL, "/global"),
     geckoHeaders(),
     "Global data not found",
+  );
+
+export const fetchPrivatBankRates = async () =>
+  fetchJson(
+    "https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5",
+    { Accept: "application/json" },
+    "PrivatBank rates not found",
+  );
+
+export const fetchMonoBankRates = async () =>
+  fetchJson(
+    "https://api.monobank.ua/bank/currency",
+    { Accept: "application/json" },
+    "MonoBank rates not found",
   );
 
 export const fetchCoinGeckoTopData = async () =>
