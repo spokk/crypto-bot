@@ -105,18 +105,28 @@ export const fetchCoinGeckoGlobal = async () =>
     "Global data not found",
   );
 
-export const fetchPrivatBankRates = async () =>
-  fetchJson(
+export const fetchPrivatBankRates = async () => {
+  const data = await fetchJson(
     "https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5",
     { Accept: "application/json" },
     "PrivatBank rates not found",
   );
+  console.log("PrivatBank response:", JSON.stringify(data, null, 2));
+  return data;
+};
 
 export const fetchMonoBankRates = async () =>
   fetchJson(
     "https://api.monobank.ua/bank/currency",
     { Accept: "application/json" },
     "MonoBank rates not found",
+  );
+
+export const fetchNbuExchangeRates = async () =>
+  fetchJson(
+    "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json",
+    { Accept: "application/json" },
+    "NBU exchange rates not found",
   );
 
 export const fetchCoinGeckoTopData = async () =>
