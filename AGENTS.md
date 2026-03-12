@@ -8,9 +8,9 @@
 
 ## Architecture
 
-Telegram bot (Telegraf) deployed as a Vercel serverless function (`api/bot.js`).
+Telegram bot (grammY + @grammyjs/auto-retry) deployed as a Vercel serverless function (`api/bot.js`).
 
-- **api/** — Vercel entrypoint; creates bot, registers commands, handles webhook POST.
+- **api/** — Vercel entrypoint; creates grammY `Bot`, registers commands, handles webhook POST via `webhookCallback`.
 - **handlers/** — chart generation: config builder, URL builder (QuickChart), and orchestration via `chartHandler`.
 - **utils/** — shared helpers: HTTP clients (`fetchJson`/`buildUrl` for CoinGecko & CoinMarketCap), formatting, chart data utilities, command registration.
 - **data/** — static data (`cryptoList.js` defines supported coins).

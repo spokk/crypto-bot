@@ -1,6 +1,6 @@
 # Crypto Bot
 
-A Telegram bot that provides real-time cryptocurrency prices, 7-day charts, and market overview data. Deployed as a Vercel serverless function.
+A Telegram bot that provides real-time cryptocurrency prices, 7-day charts, and market overview data. Built with [grammY](https://grammy.dev/) and deployed as a Vercel serverless function.
 
 ## Features
 
@@ -42,15 +42,15 @@ Deploys to Vercel via `vercel --prod`.
 ## Project Structure
 
 ```
-api/bot.js              — Vercel entrypoint, bot setup & webhook handler
-handlers/chartConfig.js — Chart.js config builder (theme, annotations, scales)
-handlers/chartHandler.js— Orchestrates chart data fetching & URL generation
-handlers/chartUrl.js    — Builds QuickChart URL from chart config
-utils/http.js           — API clients for CoinGecko & CoinMarketCap
-utils/format.js         — Message formatting & market overview builder
-utils/chartUtils.js     — Price/label/volume formatters for chart data
-utils/registerCryptoCommand.js — Registers per-coin bot commands
-data/cryptoList.js      — Supported coins list
+api/bot.js                        — Vercel entrypoint, grammY bot setup & webhook handler
+handlers/chartConfig.js            — Chart.js config builder (theme, annotations, scales)
+handlers/chartHandler.js           — Orchestrates chart data fetching & URL generation
+handlers/chartUrl.js               — Builds QuickChart URL from chart config
+utils/http.js                      — API clients for CoinGecko & CoinMarketCap
+utils/format.js                    — Message formatting & market overview builder
+utils/chartUtils.js                — Price/label/volume formatters for chart data
+utils/registerCryptoCommand.js     — Registers per-coin bot commands
+data/cryptoList.js                 — Supported coins list
 ```
 
 ## License
