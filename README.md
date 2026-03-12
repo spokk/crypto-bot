@@ -11,13 +11,13 @@ A Telegram bot that provides real-time cryptocurrency prices, 7-day charts, and 
 
 ## Commands
 
-| Command    | Description                  |
-| ---------- | ---------------------------- |
-| `/btc`     | Bitcoin (BTC) price & chart  |
-| `/eth`     | Ethereum (ETH) price & chart |
-| `/gold`    | Tether Gold (XAUt) price & chart |
-| `/silver`  | Kinesis Silver (KAG) price & chart |
-| `/top`     | Market overview summary      |
+| Command   | Description                        |
+| --------- | ---------------------------------- |
+| `/btc`    | Bitcoin (BTC) price & chart        |
+| `/eth`    | Ethereum (ETH) price & chart       |
+| `/gold`   | Tether Gold (XAUt) price & chart   |
+| `/silver` | Kinesis Silver (KAG) price & chart |
+| `/top`    | Market overview summary            |
 
 ## Setup
 
