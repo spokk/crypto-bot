@@ -6,21 +6,17 @@ const CHART_DEFAULTS = {
   format: "png",
 };
 
-const jsStringify = (obj, indent = 0) => {
+const jsStringify = (obj) => {
   if (obj === null || obj === undefined) return String(obj);
   if (typeof obj === "function") return obj.toString();
   if (typeof obj === "string") return JSON.stringify(obj);
   if (typeof obj === "number" || typeof obj === "boolean") return String(obj);
   if (Array.isArray(obj)) {
-    const items = obj.map((item) => jsStringify(item, indent + 1));
-    return `[${items.join(",")}]`;
+    return `[${obj.map((item) => jsStringify(item)).join(",")}]`;
   }
   const entries = Object.entries(obj)
     .filter(([, v]) => v !== undefined)
-    .map(
-      ([key, value]) =>
-        `${JSON.stringify(key)}:${jsStringify(value, indent + 1)}`,
-    );
+    .map(([key, value]) => `${JSON.stringify(key)}:${jsStringify(value)}`);
   return `{${entries.join(",")}}`;
 };
 

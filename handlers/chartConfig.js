@@ -6,8 +6,6 @@ const THEME = {
   line: "#4fc3f7",
   fill: "rgba(0, 122, 204, 0.1)",
   tooltip: "#2c2c3a",
-  up: "#26a69a",
-  down: "#ef5350",
   annotation: "rgba(255, 255, 255, 0.45)",
   avg: "rgba(255, 193, 7, 0.6)",
   volume: "rgba(255, 255, 255, 0.08)",

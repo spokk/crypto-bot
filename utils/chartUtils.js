@@ -29,7 +29,8 @@ const MAX_POINTS = 200;
 
 export const downsample = (arr) => {
   if (arr.length <= MAX_POINTS) return arr;
-  const step = arr.length / MAX_POINTS;
+  const last = arr.length - 1;
+  const step = last / (MAX_POINTS - 1);
   return Array.from(
     { length: MAX_POINTS },
     (_, i) => arr[Math.round(i * step)],
