@@ -44,7 +44,12 @@ const buildYScale = (position, paddedMin, paddedMax, showGrid) => ({
     color: THEME.tick,
     font: { size: 16, family: THEME.font, weight: "700" },
     padding: 6,
-    callback: (val) => formatUsd(val),
+    callback: (val) =>
+      val >= 1
+        ? "$" + val.toLocaleString("en-US")
+        : typeof val === "number"
+          ? "$" + val
+          : "N/A",
   },
   grid: showGrid
     ? { color: THEME.grid, borderColor: "transparent" }
@@ -96,7 +101,7 @@ export const getChartConfig = (
       yAxisID: "y",
       segment: {
         borderColor: (ctx) =>
-          ctx.p0.parsed.y <= ctx.p1.parsed.y ? THEME.up : THEME.down,
+          ctx.p0.parsed.y <= ctx.p1.parsed.y ? "#26a69a" : "#ef5350",
       },
     },
     {
