@@ -11,7 +11,7 @@ import {
 } from "../utils/http.js";
 import { formatCryptoMessage } from "../utils/format.js";
 import { formatCompareMessage } from "../utils/compareFormat.js";
-import { formatLabels } from "../utils/chartUtils.js";
+import { formatLabels, downsample } from "../utils/chartUtils.js";
 import { buildTimeframeKeyboard } from "../utils/keyboard.js";
 import { cryptoList } from "../data/cryptoList.js";
 
@@ -68,9 +68,11 @@ const handleCompareCallback = async (ctx, parts) => {
     fetchCryptoQuote(coinB.symbol),
   ]);
 
-  const pricesA = chartA.prices.map(([, p]) => p);
-  const pricesB = chartB.prices.map(([, p]) => p);
-  const labels = formatLabels(chartA.prices, days);
+  const sampledA = downsample(chartA.prices);
+  const sampledB = downsample(chartB.prices);
+  const pricesA = sampledA.map(([, p]) => p);
+  const pricesB = sampledB.map(([, p]) => p);
+  const labels = formatLabels(sampledA, days);
 
   const chartConfig = getCompareChartConfig(
     coinA.symbol,

@@ -24,3 +24,14 @@ export const formatLabels = (prices, days = 7) =>
   });
 
 export const formatVolumes = (volumes) => volumes.map(([, volume]) => volume);
+
+const MAX_POINTS = 200;
+
+export const downsample = (arr) => {
+  if (arr.length <= MAX_POINTS) return arr;
+  const step = arr.length / MAX_POINTS;
+  return Array.from(
+    { length: MAX_POINTS },
+    (_, i) => arr[Math.round(i * step)],
+  );
+};

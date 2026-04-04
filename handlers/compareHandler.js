@@ -1,7 +1,7 @@
 import { InputFile } from "grammy";
 import { cryptoList } from "../data/cryptoList.js";
 import { fetchCoinGeckoMarketChart, fetchCryptoQuote } from "../utils/http.js";
-import { formatLabels } from "../utils/chartUtils.js";
+import { formatLabels, downsample } from "../utils/chartUtils.js";
 import { getCompareChartConfig } from "./compareChartConfig.js";
 import { fetchChartBuffer } from "./chartUrl.js";
 import { buildTimeframeKeyboard } from "../utils/keyboard.js";
@@ -59,9 +59,11 @@ export const compareHandler = async (ctx) => {
     fetchCryptoQuote(coinB.symbol),
   ]);
 
-  const pricesA = chartA.prices.map(([, p]) => p);
-  const pricesB = chartB.prices.map(([, p]) => p);
-  const labels = formatLabels(chartA.prices);
+  const sampledA = downsample(chartA.prices);
+  const sampledB = downsample(chartB.prices);
+  const pricesA = sampledA.map(([, p]) => p);
+  const pricesB = sampledB.map(([, p]) => p);
+  const labels = formatLabels(sampledA);
 
   const change7dA = quoteA?.percent_change_7d;
   const change7dB = quoteB?.percent_change_7d;
