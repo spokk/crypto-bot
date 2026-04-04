@@ -168,7 +168,7 @@ export const formatTopCryptosMessage = (
     const name = shortName(coin.name) ?? coin.name;
     const price = `$${formatNumber(coin.current_price)}`;
     const change = formatPercentage(coin.price_change_percentage_24h);
-    const changeIcon = coin.price_change_percentage_24h >= 0 ? "🟢" : "🔴";
+    const changeIcon = getChangeSymbol(coin.price_change_percentage_24h);
 
     return { name, price, change, changeIcon };
   });

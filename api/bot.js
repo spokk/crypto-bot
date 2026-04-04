@@ -54,6 +54,9 @@ bot.command("top", async (ctx) => {
     });
   } catch (error) {
     console.error("Failed to fetch data for top:", error);
+    await ctx.reply("Something went wrong. Please try again later.", {
+      disable_notification: true,
+    });
   }
 });
 
@@ -68,6 +71,9 @@ bot.command("uah", async (ctx) => {
     });
   } catch (error) {
     console.error("Failed to fetch UAH rates:", error);
+    await ctx.reply("Something went wrong. Please try again later.", {
+      disable_notification: true,
+    });
   }
 });
 

@@ -1,3 +1,5 @@
+import { cryptoList } from "../data/cryptoList.js";
+
 const CMC_BASE_URL = "https://pro-api.coinmarketcap.com";
 const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3";
 
@@ -18,7 +20,9 @@ const fetchJson = async (url, headers = {}, errorMsg = "Request failed") => {
     let body = "";
     try {
       body = await response.text();
-    } catch {}
+    } catch {
+      // ignore read failure
+    }
 
     throw new Error(`${errorMsg} (status ${response.status}) ${body}`);
   }
@@ -106,13 +110,11 @@ export const fetchCoinGeckoGlobal = async () =>
   );
 
 export const fetchPrivatBankRates = async () => {
-  const data = await fetchJson(
+  return fetchJson(
     "https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5",
     { Accept: "application/json" },
     "PrivatBank rates not found",
   );
-  console.log("PrivatBank response:", JSON.stringify(data, null, 2));
-  return data;
 };
 
 export const fetchMonoBankRates = async () =>
@@ -133,7 +135,7 @@ export const fetchCoinGeckoTopData = async () =>
   fetchJson(
     buildUrl(COINGECKO_BASE_URL, "/coins/markets", {
       vs_currency: "usd",
-      ids: "bitcoin,ethereum,tether-gold,kinesis-silver",
+      ids: cryptoList.map((c) => c.geckoId).join(","),
       order: "market_cap_desc",
       per_page: "20",
       sparkline: "false",

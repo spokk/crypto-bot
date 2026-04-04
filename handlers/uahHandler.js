@@ -9,9 +9,7 @@ const handleFetchResult = (result, source) => {
   if (result.status === "rejected") {
     console.error(`${source} fetch failed:`, result.reason);
   }
-  const data = result.status === "fulfilled" ? result.value : [];
-  console.log(`${source} data:`, JSON.stringify(data, null, 2));
-  return data;
+  return result.status === "fulfilled" ? result.value : [];
 };
 
 export const uahHandler = async () => {

@@ -53,8 +53,8 @@ const buildYScale = (position, paddedMin, paddedMax, showGrid) => ({
 
 export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
   const numericPrices = prices.map(Number);
-  const min = Math.min(...numericPrices);
-  const max = Math.max(...numericPrices);
+  const min = numericPrices.reduce((a, b) => Math.min(a, b), Infinity);
+  const max = numericPrices.reduce((a, b) => Math.max(a, b), -Infinity);
   const avg = numericPrices.reduce((a, b) => a + b, 0) / numericPrices.length;
   const lastPrice = numericPrices.at(-1);
 
@@ -144,7 +144,7 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
     scales.volume = {
       position: "left",
       min: 0,
-      max: Math.max(...volumes) * 5,
+      max: volumes.reduce((a, b) => Math.max(a, b), 0) * 5,
       display: false,
       grid: { display: false },
     };

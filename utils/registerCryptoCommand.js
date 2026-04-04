@@ -46,6 +46,9 @@ export const registerCryptoCommand = (
       }
     } catch (error) {
       console.error(`Failed to fetch data for ${symbol}:`, error);
+      await ctx.reply("Something went wrong. Please try again later.", {
+        disable_notification: true,
+      });
     }
   });
 };

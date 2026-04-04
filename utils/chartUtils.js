@@ -2,7 +2,7 @@ import { trimSmallNumber } from "./format.js";
 
 export const formatPrices = (prices) =>
   prices.map(([, price]) =>
-    price >= 1 ? price.toFixed(2) : trimSmallNumber(price),
+    price >= 1 ? price.toFixed(2) : String(trimSmallNumber(price)),
   );
 
 const labelFormatter = new Intl.DateTimeFormat("en-US", {

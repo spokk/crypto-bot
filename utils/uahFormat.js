@@ -1,30 +1,14 @@
 const ICONS = { USD: "💵", EUR: "💶" };
 const CURRENCIES = ["USD", "EUR"];
 const MONO_CODES = { USD: 840, EUR: 978 };
-const DATE_OPTIONS = {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-};
-
 export const formatCurrency = (value) => {
   const num = typeof value === "string" ? parseFloat(value) : value;
-  const formatted =
-    typeof num === "number" && !isNaN(num) ? num.toFixed(2) : "N/A";
-  console.log(`formatCurrency(${value}) => ${formatted}`);
-  return formatted;
+  return typeof num === "number" && !isNaN(num) ? num.toFixed(2) : "N/A";
 };
 
 const findCurrency = (rates, predicate) => rates?.find?.(predicate);
 
 const formatCurrencyLine = (icon, code, rates, buyKey, sellKey) => {
-  console.log(
-    `formatCurrencyLine - Finding ${code}: rates=`,
-    rates,
-    `buyKey=${buyKey}, sellKey=${sellKey}`,
-  );
   const buy = formatCurrency(rates?.[buyKey]);
   const sell = formatCurrency(rates?.[sellKey]);
   return `${icon} ${code} — Buy: ${buy} ₴ · Sale: ${sell} ₴`;
@@ -50,20 +34,11 @@ export const formatNbuRates = (nbuRates) => {
 };
 
 export const buildUahMessage = (pbRates, monoRates, nbuRates) => {
-  console.log("buildUahMessage - pbRates:", JSON.stringify(pbRates, null, 2));
-  console.log(
-    "buildUahMessage - monoRates:",
-    JSON.stringify(monoRates, null, 2),
-  );
-  console.log("buildUahMessage - nbuRates:", JSON.stringify(nbuRates, null, 2));
-
   const lines = ["🇺🇦 <b>UAH Exchange Rates</b>", ""];
 
   // PrivatBank
   const pbUsd = findCurrency(pbRates, (r) => r.ccy === "USD");
   const pbEur = findCurrency(pbRates, (r) => r.ccy === "EUR");
-  console.log("PrivatBank USD:", JSON.stringify(pbUsd, null, 2));
-  console.log("PrivatBank EUR:", JSON.stringify(pbEur, null, 2));
 
   lines.push(
     ...formatBankRates("PrivatBank", "🏦", pbUsd, pbEur, "buy", "sale"),
