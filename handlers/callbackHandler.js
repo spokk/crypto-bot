@@ -116,6 +116,10 @@ export const registerCallbackHandler = (bot) => {
       }
       await ctx.answerCallbackQuery();
     } catch (error) {
+      if (error?.description?.includes("message is not modified")) {
+        await ctx.answerCallbackQuery();
+        return;
+      }
       console.error("Callback query failed:", error);
       await ctx.answerCallbackQuery({ text: "Something went wrong." });
     }

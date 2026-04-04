@@ -37,7 +37,8 @@ export const fetchChartBuffer = async (chartConfig) => {
   });
 
   if (!response.ok) {
-    throw new Error(`QuickChart POST failed: ${response.status}`);
+    const errorBody = await response.text().catch(() => "");
+    throw new Error(`QuickChart POST failed: ${response.status} ${errorBody}`);
   }
 
   const arrayBuffer = await response.arrayBuffer();
