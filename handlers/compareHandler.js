@@ -4,6 +4,7 @@ import { formatLabels } from "../utils/chartUtils.js";
 import { safeFixed, getChangeSymbol } from "../utils/format.js";
 import { getCompareChartConfig } from "./compareChartConfig.js";
 import { buildQuickChartUrl } from "./chartUrl.js";
+import { buildTimeframeKeyboard } from "../utils/keyboard.js";
 
 const COIN_LOOKUP = new Map(
   cryptoList.flatMap((c) => [
@@ -132,11 +133,16 @@ export const compareHandler = async (ctx) => {
     quoteB,
   );
 
+  const keyboard = buildTimeframeKeyboard(
+    `x:${coinA.geckoId}:${coinB.geckoId}`,
+  );
+
   if (chartUrl) {
     await ctx.replyWithPhoto(chartUrl, {
       caption: message,
       parse_mode: "HTML",
       disable_notification: true,
+      reply_markup: keyboard,
     });
   } else {
     await ctx.reply(message, {

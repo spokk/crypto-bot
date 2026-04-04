@@ -5,12 +5,22 @@ export const formatPrices = (prices) =>
     price >= 1 ? price.toFixed(2) : String(trimSmallNumber(price)),
   );
 
-const labelFormatter = new Intl.DateTimeFormat("en-US", {
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
 });
 
-export const formatLabels = (prices) =>
-  prices.map(([timestamp]) => labelFormatter.format(new Date(timestamp)));
+const timeFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  timeZone: "Europe/Kyiv",
+});
+
+export const formatLabels = (prices, days = 7) =>
+  prices.map(([timestamp]) => {
+    const d = new Date(timestamp);
+    return days <= 1 ? timeFormatter.format(d) : dateFormatter.format(d);
+  });
 
 export const formatVolumes = (volumes) => volumes.map(([, volume]) => volume);

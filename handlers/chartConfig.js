@@ -51,7 +51,14 @@ const buildYScale = (position, paddedMin, paddedMax, showGrid) => ({
     : { display: false },
 });
 
-export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
+export const getChartConfig = (
+  symbol,
+  labels,
+  prices,
+  coinData,
+  volumes,
+  days = 7,
+) => {
   const numericPrices = prices.map(Number);
   const min = numericPrices.reduce((a, b) => Math.min(a, b), Infinity);
   const max = numericPrices.reduce((a, b) => Math.max(a, b), -Infinity);
@@ -93,7 +100,7 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
       },
     },
     {
-      label: "7d High / Low",
+      label: `${days}d High / Low`,
       data: [],
       borderColor: THEME.annotation,
       borderDash: [6, 4],
@@ -102,7 +109,7 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
       fill: false,
     },
     {
-      label: "7d Avg",
+      label: `${days}d Avg`,
       data: [],
       borderColor: THEME.avg,
       borderDash: [4, 4],
@@ -189,9 +196,18 @@ export const getChartConfig = (symbol, labels, prices, coinData, volumes) => {
         },
         annotation: {
           annotations: {
-            highLine: buildAnnotationLine("7d High", max, THEME.annotation),
-            lowLine: buildAnnotationLine("7d Low", min, THEME.annotation),
-            avgLine: buildAnnotationLine("7d Avg", avg, THEME.avg, [4, 4]),
+            highLine: buildAnnotationLine(
+              `${days}d High`,
+              max,
+              THEME.annotation,
+            ),
+            lowLine: buildAnnotationLine(`${days}d Low`, min, THEME.annotation),
+            avgLine: buildAnnotationLine(
+              `${days}d Avg`,
+              avg,
+              THEME.avg,
+              [4, 4],
+            ),
             lastPriceLine: buildAnnotationLine(
               "Now",
               lastPrice,

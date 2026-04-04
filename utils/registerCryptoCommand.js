@@ -6,6 +6,7 @@ import {
   fetchCoinGeckoGlobal,
 } from "./http.js";
 import { formatCryptoMessage } from "./format.js";
+import { buildTimeframeKeyboard } from "./keyboard.js";
 
 export const registerCryptoCommand = (
   bot,
@@ -37,9 +38,11 @@ export const registerCryptoCommand = (
       );
 
       if (chartResult?.url) {
+        const keyboard = buildTimeframeKeyboard(`c:${symbol}:${geckoId}`);
         await ctx.replyWithPhoto(chartResult.url, {
           caption: message,
           disable_notification: true,
+          reply_markup: keyboard,
         });
       } else {
         await ctx.reply(message, { disable_notification: true });

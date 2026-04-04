@@ -23,6 +23,7 @@ export const getCompareChartConfig = (
   labels,
   changeA,
   changeB,
+  days = 7,
 ) => {
   const pctA = normalizeToPercent(pricesA.map(Number));
   const pctB = normalizeToPercent(pricesB.map(Number));
@@ -78,7 +79,7 @@ export const getCompareChartConfig = (
         },
         title: {
           display: true,
-          text: "7-Day Performance Comparison (%)",
+          text: `${days}-Day Performance Comparison (%)`,
           color: "#e0e0e0",
           font: { size: 15, weight: "600", family: THEME.font },
           padding: { top: 0, bottom: 4 },

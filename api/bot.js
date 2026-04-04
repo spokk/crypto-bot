@@ -12,6 +12,7 @@ import { formatTopCryptosMessage } from "../utils/format.js";
 import { registerCryptoCommand } from "../utils/registerCryptoCommand.js";
 import { uahHandler } from "../handlers/uahHandler.js";
 import { compareHandler } from "../handlers/compareHandler.js";
+import { registerCallbackHandler } from "../handlers/callbackHandler.js";
 import { cryptoList } from "../data/cryptoList.js";
 
 const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
@@ -94,5 +95,7 @@ bot.command("uah", async (ctx) => {
     });
   }
 });
+
+registerCallbackHandler(bot);
 
 export default webhookCallback(bot, "http");
