@@ -36,7 +36,8 @@ export const fetchChartBuffer = async (chartConfig) => {
     body,
   });
 
-  if (!response.ok) {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.startsWith("image/")) {
     const errorBody = await response.text().catch(() => "");
     throw new Error(`QuickChart POST failed: ${response.status} ${errorBody}`);
   }
