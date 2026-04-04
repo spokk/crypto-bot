@@ -1,6 +1,7 @@
+import { InputFile } from "grammy";
 import { chartHandler } from "./chartHandler.js";
 import { getCompareChartConfig } from "./compareChartConfig.js";
-import { buildQuickChartUrl } from "./chartUrl.js";
+import { fetchChartBuffer } from "./chartUrl.js";
 import {
   fetchCryptoQuote,
   fetchFearAndGreed,
@@ -8,22 +9,13 @@ import {
   fetchCoinGeckoGlobal,
   fetchCoinGeckoMarketChart,
 } from "../utils/http.js";
-import {
-  formatCryptoMessage,
-  safeFixed,
-  getChangeSymbol,
-} from "../utils/format.js";
+import { formatCryptoMessage } from "../utils/format.js";
+import { formatCompareMessage } from "../utils/compareFormat.js";
 import { formatLabels } from "../utils/chartUtils.js";
 import { buildTimeframeKeyboard } from "../utils/keyboard.js";
 import { cryptoList } from "../data/cryptoList.js";
 
 const COIN_BY_SYMBOL = new Map(cryptoList.map((c) => [c.symbol, c]));
-
-const formatSignedPct = (v) => {
-  if (typeof v !== "number" || isNaN(v)) return "N/A";
-  const sign = v >= 0 ? "+" : "";
-  return `${sign}${v.toFixed(2)}%`;
-};
 
 const handleCryptoCallback = async (ctx, parts) => {
   const [symbol, geckoId, daysStr] = parts;
@@ -54,54 +46,11 @@ const handleCryptoCallback = async (ctx, parts) => {
   await ctx.editMessageMedia(
     {
       type: "photo",
-      media: chartResult.url,
+      media: new InputFile(chartResult.buffer, "chart.png"),
       caption: message,
     },
     { reply_markup: keyboard },
   );
-};
-
-const buildCompareCaption = (coinA, quoteA, coinB, quoteB) => {
-  const periods = [
-    { label: "1h", key: "percent_change_1h" },
-    { label: "24h", key: "percent_change_24h" },
-    { label: "7d", key: "percent_change_7d" },
-    { label: "30d", key: "percent_change_30d" },
-  ];
-
-  const rows = periods.map(({ label, key }) => {
-    const a = quoteA?.[key];
-    const b = quoteB?.[key];
-    return `${label.padStart(3)}  ${getChangeSymbol(a)} ${formatSignedPct(a).padStart(8)}  ${getChangeSymbol(b)} ${formatSignedPct(b).padStart(8)}`;
-  });
-
-  const changeKeyA = quoteA?.percent_change_7d;
-  const changeKeyB = quoteB?.percent_change_7d;
-
-  let verdict = "";
-  if (typeof changeKeyA === "number" && typeof changeKeyB === "number") {
-    const diff = Math.abs(changeKeyA - changeKeyB);
-    if (changeKeyA > changeKeyB) {
-      verdict = `\n📊 ${coinA.symbol} outperformed ${coinB.symbol} by ${diff.toFixed(2)}% over 7d`;
-    } else if (changeKeyB > changeKeyA) {
-      verdict = `\n📊 ${coinB.symbol} outperformed ${coinA.symbol} by ${diff.toFixed(2)}% over 7d`;
-    } else {
-      verdict = `\n📊 Both performed equally over 7d`;
-    }
-  }
-
-  const priceA = safeFixed(quoteA?.price);
-  const priceB = safeFixed(quoteB?.price);
-  const header = `${"".padStart(3)}  ${coinA.symbol.padStart(8)}  ${coinB.symbol.padStart(8)}`;
-
-  return [
-    `⚖️ ${coinA.symbol} $${priceA}  vs  ${coinB.symbol} $${priceB}`,
-    "",
-    `<pre>${header}`,
-    ...rows,
-    `</pre>`,
-    verdict,
-  ].join("\n");
 };
 
 const handleCompareCallback = async (ctx, parts) => {
@@ -134,14 +83,19 @@ const handleCompareCallback = async (ctx, parts) => {
     days,
   );
 
-  const chartUrl = buildQuickChartUrl(chartConfig);
-  const caption = buildCompareCaption(coinA, quoteA, coinB, quoteB);
+  const chartBuffer = await fetchChartBuffer(chartConfig);
+  const caption = formatCompareMessage(
+    coinA.symbol,
+    quoteA,
+    coinB.symbol,
+    quoteB,
+  );
   const keyboard = buildTimeframeKeyboard(`x:${geckoIdA}:${geckoIdB}`, days);
 
   await ctx.editMessageMedia(
     {
       type: "photo",
-      media: chartUrl,
+      media: new InputFile(chartBuffer, "chart.png"),
       caption,
       parse_mode: "HTML",
     },

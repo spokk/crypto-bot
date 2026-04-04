@@ -8,7 +8,7 @@ import {
   formatVolumes,
 } from "../utils/chartUtils.js";
 import { getChartConfig } from "./chartConfig.js";
-import { buildQuickChartUrl } from "./chartUrl.js";
+import { fetchChartBuffer } from "./chartUrl.js";
 
 export const chartHandler = async (symbol, geckoId, days = 7) => {
   const [chart, coinData] = await Promise.all([
@@ -31,7 +31,7 @@ export const chartHandler = async (symbol, geckoId, days = 7) => {
   const marketData = coinData?.market_data ?? {};
 
   return {
-    url: buildQuickChartUrl(chartConfig),
+    buffer: await fetchChartBuffer(chartConfig),
     high24: marketData.high_24h?.usd ?? null,
     low24: marketData.low_24h?.usd ?? null,
   };

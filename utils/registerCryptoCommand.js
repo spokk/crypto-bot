@@ -1,3 +1,4 @@
+import { InputFile } from "grammy";
 import { chartHandler } from "../handlers/chartHandler.js";
 import {
   fetchCryptoQuote,
@@ -37,13 +38,16 @@ export const registerCryptoCommand = (
         cgGlobal,
       );
 
-      if (chartResult?.url) {
+      if (chartResult?.buffer) {
         const keyboard = buildTimeframeKeyboard(`c:${symbol}:${geckoId}`);
-        await ctx.replyWithPhoto(chartResult.url, {
-          caption: message,
-          disable_notification: true,
-          reply_markup: keyboard,
-        });
+        await ctx.replyWithPhoto(
+          new InputFile(chartResult.buffer, "chart.png"),
+          {
+            caption: message,
+            disable_notification: true,
+            reply_markup: keyboard,
+          },
+        );
       } else {
         await ctx.reply(message, { disable_notification: true });
       }

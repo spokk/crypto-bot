@@ -1,21 +1,22 @@
 const CHART_DEFAULTS = {
-  API_VERSION: "4",
-  WIDTH: "1100",
-  HEIGHT: "550",
-  BACKGROUND_COLOR: "#1e1e2f",
-  BASE_URL: "https://quickchart.io/chart",
+  version: "4",
+  width: 1100,
+  height: 550,
+  backgroundColor: "#1e1e2f",
+  format: "png",
 };
 
-export const buildQuickChartUrl = (chartConfig) => {
-  const { BASE_URL, API_VERSION, WIDTH, HEIGHT, BACKGROUND_COLOR } =
-    CHART_DEFAULTS;
+export const fetchChartBuffer = async (chartConfig) => {
+  const response = await fetch("https://quickchart.io/chart", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...CHART_DEFAULTS, chart: chartConfig }),
+  });
 
-  const url = new URL(BASE_URL);
-  url.searchParams.set("v", API_VERSION);
-  url.searchParams.set("width", WIDTH);
-  url.searchParams.set("height", HEIGHT);
-  url.searchParams.set("backgroundColor", BACKGROUND_COLOR);
-  url.searchParams.set("c", JSON.stringify(chartConfig));
+  if (!response.ok) {
+    throw new Error(`QuickChart POST failed: ${response.status}`);
+  }
 
-  return url.toString();
+  const arrayBuffer = await response.arrayBuffer();
+  return new Uint8Array(arrayBuffer);
 };
