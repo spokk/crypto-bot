@@ -19,6 +19,7 @@ export const registerStockCommand = (
       const message = formatStockMessage(displayName, chartResult.meta, {
         high24: chartResult.high24,
         low24: chartResult.low24,
+        periodChange: chartResult.periodChange,
       });
 
       if (chartResult?.buffer) {

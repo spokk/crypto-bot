@@ -120,6 +120,7 @@ const handleStockCallback = async (ctx, parts) => {
   const message = formatStockMessage(stock.name, chartResult.meta, {
     high24: chartResult.high24,
     low24: chartResult.low24,
+    periodChange: chartResult.periodChange,
   });
 
   const keyboard = buildTimeframeKeyboard(`s:${ticker}`, days);

@@ -12,11 +12,12 @@ const DATE_FORMAT_OPTIONS = {
 
 export const formatStockMessage = (displayName, meta, range = {}) => {
   const price = safeFixed(meta?.regularMarketPrice);
-  const prevClose = meta?.previousClose;
   const change =
-    meta?.regularMarketPrice && prevClose
-      ? ((meta.regularMarketPrice - prevClose) / prevClose) * 100
-      : null;
+    range.periodChange ??
+    (meta?.regularMarketPrice && meta?.previousClose
+      ? ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose) *
+        100
+      : null);
 
   const changeIcon = getChangeSymbol(change);
 

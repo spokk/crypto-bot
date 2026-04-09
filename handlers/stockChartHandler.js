@@ -55,16 +55,16 @@ export const stockChartHandler = async (ticker, displaySymbol, days = 7) => {
   const high24 = validHighs.length ? Math.max(...validHighs) : null;
   const low24 = validLows.length ? Math.min(...validLows) : null;
 
+  const firstPrice = pricePairs.length ? pricePairs[0][1] : null;
+  const lastPrice = pricePairs.length ? pricePairs[pricePairs.length - 1][1] : null;
+  const periodChange =
+    firstPrice && lastPrice ? ((lastPrice - firstPrice) / firstPrice) * 100 : null;
+
   const coinData = {
     market_data: {
       high_24h: { usd: high24 },
       low_24h: { usd: low24 },
-      price_change_percentage_24h:
-        meta.regularMarketPrice && meta.previousClose
-          ? ((meta.regularMarketPrice - meta.previousClose) /
-              meta.previousClose) *
-            100
-          : null,
+      price_change_percentage_24h: periodChange,
     },
   };
 
@@ -81,5 +81,6 @@ export const stockChartHandler = async (ticker, displaySymbol, days = 7) => {
     high24,
     low24,
     meta,
+    periodChange,
   };
 };
