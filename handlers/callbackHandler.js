@@ -142,6 +142,11 @@ export const registerCallbackHandler = (bot) => {
     const [type, ...rest] = data.split(":");
 
     try {
+      await Promise.all([
+        ctx.answerCallbackQuery({ text: "Loading…" }),
+        ctx.replyWithChatAction("upload_photo"),
+      ]);
+
       if (type === "c") {
         await handleCryptoCallback(ctx, rest);
       } else if (type === "x") {
@@ -149,14 +154,10 @@ export const registerCallbackHandler = (bot) => {
       } else if (type === "s") {
         await handleStockCallback(ctx, rest);
       }
-      await ctx.answerCallbackQuery();
     } catch (error) {
-      if (error?.description?.includes("message is not modified")) {
-        await ctx.answerCallbackQuery();
-        return;
-      }
+      if (error?.description?.includes("message is not modified")) return;
       console.error("Callback query failed:", error);
-      await ctx.answerCallbackQuery({ text: "Something went wrong." });
+      await ctx.answerCallbackQuery({ text: "Something went wrong." }).catch(() => {});
     }
   });
 };
