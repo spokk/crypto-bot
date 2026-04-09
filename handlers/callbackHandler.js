@@ -3,16 +3,8 @@ import { chartHandler } from "./chartHandler.js";
 import { stockChartHandler } from "./stockChartHandler.js";
 import { getCompareChartConfig } from "./compareChartConfig.js";
 import { fetchChartBuffer } from "./chartUrl.js";
-import {
-  fetchCryptoQuote,
-  fetchFearAndGreed,
-  fetchGlobalMetrics,
-  fetchCoinGeckoGlobal,
-  fetchCoinGeckoMarketChart,
-} from "../utils/http.js";
-import { formatCryptoMessage } from "../utils/format.js";
+import { fetchCoinGeckoMarketChart } from "../utils/http.js";
 import { formatStockMessage } from "../utils/stockFormat.js";
-import { formatCompareMessage } from "../utils/compareFormat.js";
 import { formatLabels, downsample } from "../utils/chartUtils.js";
 import { buildTimeframeKeyboard } from "../utils/keyboard.js";
 import { cryptoList } from "../data/cryptoList.js";
@@ -27,31 +19,15 @@ const handleCryptoCallback = async (ctx, parts) => {
   const coin = COIN_BY_SYMBOL.get(symbol);
   if (!coin) return;
 
-  const [data, chartResult, globalMetrics, fearAndGreed, cgGlobal] =
-    await Promise.all([
-      fetchCryptoQuote(symbol),
-      chartHandler(symbol, geckoId, days),
-      fetchGlobalMetrics(),
-      fetchFearAndGreed(),
-      fetchCoinGeckoGlobal(),
-    ]);
-
-  const message = formatCryptoMessage(
-    coin.name,
-    data,
-    globalMetrics,
-    fearAndGreed,
-    { high24: chartResult.high24, low24: chartResult.low24 },
-    cgGlobal,
-  );
-
+  const chartResult = await chartHandler(symbol, geckoId, days);
+  const caption = ctx.callbackQuery.message?.caption ?? "";
   const keyboard = buildTimeframeKeyboard(`c:${symbol}:${geckoId}`, days);
 
   await ctx.editMessageMedia(
     {
       type: "photo",
       media: new InputFile(chartResult.buffer, "chart.png"),
-      caption: message,
+      caption,
     },
     { reply_markup: keyboard },
   );
@@ -65,11 +41,9 @@ const handleCompareCallback = async (ctx, parts) => {
   const coinB = cryptoList.find((c) => c.geckoId === geckoIdB);
   if (!coinA || !coinB) return;
 
-  const [chartA, chartB, quoteA, quoteB] = await Promise.all([
+  const [chartA, chartB] = await Promise.all([
     fetchCoinGeckoMarketChart(coinA.geckoId, days),
     fetchCoinGeckoMarketChart(coinB.geckoId, days),
-    fetchCryptoQuote(coinA.symbol),
-    fetchCryptoQuote(coinB.symbol),
   ]);
 
   const sampledA = downsample(chartA.prices);
@@ -78,24 +52,28 @@ const handleCompareCallback = async (ctx, parts) => {
   const pricesB = sampledB.map(([, p]) => p);
   const labels = formatLabels(sampledA, days);
 
+  const firstA = pricesA[0];
+  const lastA = pricesA.at(-1);
+  const changeA =
+    firstA && lastA ? ((lastA - firstA) / firstA) * 100 : null;
+  const firstB = pricesB[0];
+  const lastB = pricesB.at(-1);
+  const changeB =
+    firstB && lastB ? ((lastB - firstB) / firstB) * 100 : null;
+
   const chartConfig = getCompareChartConfig(
     coinA.symbol,
     pricesA,
     coinB.symbol,
     pricesB,
     labels,
-    quoteA?.percent_change_7d,
-    quoteB?.percent_change_7d,
+    changeA,
+    changeB,
     days,
   );
 
   const chartBuffer = await fetchChartBuffer(chartConfig);
-  const caption = formatCompareMessage(
-    coinA.symbol,
-    quoteA,
-    coinB.symbol,
-    quoteB,
-  );
+  const caption = ctx.callbackQuery.message?.caption ?? "";
   const keyboard = buildTimeframeKeyboard(`x:${geckoIdA}:${geckoIdB}`, days);
 
   await ctx.editMessageMedia(

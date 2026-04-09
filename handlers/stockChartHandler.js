@@ -64,8 +64,8 @@ export const stockChartHandler = async (ticker, displaySymbol, days = 7) => {
     market_data: {
       high_24h: { usd: high24 },
       low_24h: { usd: low24 },
-      price_change_percentage_24h: periodChange,
     },
+    periodChange,
   };
 
   const chartConfig = getChartConfig(

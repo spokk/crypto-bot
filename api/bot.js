@@ -21,22 +21,29 @@ const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
 
 bot.api.config.use(autoRetry());
 
-bot.api.setMyCommands([
-  ...cryptoList.map(({ command, name }) => ({
-    command,
-    description: `Current price of ${name}`,
-  })),
-  ...stockList.map(({ command, name }) => ({
-    command,
-    description: `Current price of ${name}`,
-  })),
-  {
-    command: "compare",
-    description: "Compare two coins (e.g. /compare BTC ETH)",
-  },
-  { command: "top", description: "General summary of market overview" },
-  { command: "uah", description: "UAH exchange rates (USD & EUR)" },
-]);
+let commandsRegistered = false;
+const registerCommands = () => {
+  if (commandsRegistered) return;
+  commandsRegistered = true;
+  bot.api
+    .setMyCommands([
+      ...cryptoList.map(({ command, name }) => ({
+        command,
+        description: `Current price of ${name}`,
+      })),
+      ...stockList.map(({ command, name }) => ({
+        command,
+        description: `Current price of ${name}`,
+      })),
+      {
+        command: "compare",
+        description: "Compare two coins (e.g. /compare BTC ETH)",
+      },
+      { command: "top", description: "General summary of market overview" },
+      { command: "uah", description: "UAH exchange rates (USD & EUR)" },
+    ])
+    .catch(() => {});
+};
 
 cryptoList.forEach(({ command, symbol, geckoId, name }) => {
   registerCryptoCommand(bot, command, symbol, geckoId, name);
@@ -48,6 +55,7 @@ stockList.forEach(({ command, ticker, symbol, name }) => {
 
 bot.command("compare", async (ctx) => {
   ctx.api.deleteMessage(ctx.chat.id, ctx.msg.message_id).catch(() => {});
+  ctx.replyWithChatAction("upload_photo").catch(() => {});
 
   try {
     await compareHandler(ctx);
@@ -61,6 +69,7 @@ bot.command("compare", async (ctx) => {
 
 bot.command("top", async (ctx) => {
   ctx.api.deleteMessage(ctx.chat.id, ctx.msg.message_id).catch(() => {});
+  ctx.replyWithChatAction("typing").catch(() => {});
 
   try {
     const [topData, globalMetrics, fearAndGreed, cgGlobal] = await Promise.all([
@@ -91,6 +100,7 @@ bot.command("top", async (ctx) => {
 
 bot.command("uah", async (ctx) => {
   ctx.api.deleteMessage(ctx.chat.id, ctx.msg.message_id).catch(() => {});
+  ctx.replyWithChatAction("typing").catch(() => {});
 
   try {
     const message = await uahHandler();
@@ -108,4 +118,9 @@ bot.command("uah", async (ctx) => {
 
 registerCallbackHandler(bot);
 
-export default webhookCallback(bot, "http");
+const handleUpdate = webhookCallback(bot, "http");
+
+export default (req, res) => {
+  registerCommands();
+  return handleUpdate(req, res);
+};

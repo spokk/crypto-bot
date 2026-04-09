@@ -12,6 +12,7 @@ export const registerStockCommand = (
 ) => {
   bot.command(command, async (ctx) => {
     ctx.api.deleteMessage(ctx.chat.id, ctx.msg.message_id).catch(() => {});
+    ctx.replyWithChatAction("upload_photo").catch(() => {});
 
     try {
       const chartResult = await stockChartHandler(ticker, symbol);

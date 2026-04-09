@@ -1,7 +1,4 @@
-import {
-  fetchCoinGeckoMarketChart,
-  fetchCoinGeckoCoinData,
-} from "../utils/http.js";
+import { fetchCoinGeckoMarketChart } from "../utils/http.js";
 import {
   formatPrices,
   formatLabels,
@@ -12,10 +9,7 @@ import { getChartConfig } from "./chartConfig.js";
 import { fetchChartBuffer } from "./chartUrl.js";
 
 export const chartHandler = async (symbol, geckoId, days = 7) => {
-  const [chart, coinData] = await Promise.all([
-    fetchCoinGeckoMarketChart(geckoId, days),
-    fetchCoinGeckoCoinData(geckoId),
-  ]);
+  const chart = await fetchCoinGeckoMarketChart(geckoId, days);
 
   const sampled = downsample(chart.prices);
   const prices = formatPrices(sampled);
@@ -25,6 +19,24 @@ export const chartHandler = async (symbol, geckoId, days = 7) => {
     : [];
   const volumes = sampledVolumes.length ? formatVolumes(sampledVolumes) : [];
 
+  const numPrices = sampled.map(([, p]) => p);
+  const high = numPrices.length ? Math.max(...numPrices) : null;
+  const low = numPrices.length ? Math.min(...numPrices) : null;
+  const firstPrice = numPrices[0];
+  const lastPrice = numPrices.at(-1);
+  const periodChange =
+    firstPrice && lastPrice
+      ? ((lastPrice - firstPrice) / firstPrice) * 100
+      : null;
+
+  const coinData = {
+    market_data: {
+      high_24h: { usd: high },
+      low_24h: { usd: low },
+    },
+    periodChange,
+  };
+
   const chartConfig = getChartConfig(
     symbol,
     labels,
@@ -33,11 +45,11 @@ export const chartHandler = async (symbol, geckoId, days = 7) => {
     volumes,
     days,
   );
-  const marketData = coinData?.market_data ?? {};
 
   return {
     buffer: await fetchChartBuffer(chartConfig),
-    high24: marketData.high_24h?.usd ?? null,
-    low24: marketData.low_24h?.usd ?? null,
+    high24: high,
+    low24: low,
+    periodChange,
   };
 };

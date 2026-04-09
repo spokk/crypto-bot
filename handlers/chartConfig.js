@@ -76,11 +76,11 @@ export const getChartConfig = (
   const marketData = coinData?.market_data;
   const high24 = marketData?.high_24h?.usd;
   const low24 = marketData?.low_24h?.usd;
-  const change24 = marketData?.price_change_percentage_24h;
+  const periodChange = coinData?.periodChange ?? marketData?.price_change_percentage_24h;
 
   const changeStr =
-    typeof change24 === "number"
-      ? `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`
+    typeof periodChange === "number"
+      ? `${periodChange >= 0 ? "+" : ""}${periodChange.toFixed(2)}%`
       : "";
 
   const hasVolumes = volumes?.length > 0;
@@ -160,11 +160,12 @@ export const getChartConfig = (
     };
   }
 
+  const periodLabel = days === 1 ? "24h" : `${days}D`;
   const subtitleParts = [];
   if (typeof high24 === "number")
-    subtitleParts.push(`24h High: ${formatUsd(high24)}`);
+    subtitleParts.push(`${periodLabel} High: ${formatUsd(high24)}`);
   if (typeof low24 === "number")
-    subtitleParts.push(`24h Low: ${formatUsd(low24)}`);
+    subtitleParts.push(`${periodLabel} Low: ${formatUsd(low24)}`);
 
   return {
     type: "line",
