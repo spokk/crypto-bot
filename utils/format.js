@@ -122,7 +122,7 @@ export const formatCryptoMessage = (
   const changeLine1 = `${changes[0]}  ·  ${changes[1]}`;
   const changeLine2 = `${changes[2]}  ·  ${changes[3]}`;
 
-  // 24h range + market stats on compact lines
+  const periodLabel = range24.days && range24.days !== 1 ? `${range24.days}D ` : "";
   const details = [];
   if (typeof range24.high24 === "number" || typeof range24.low24 === "number") {
     const high =
@@ -131,7 +131,7 @@ export const formatCryptoMessage = (
         : "-";
     const low =
       typeof range24.low24 === "number" ? `$${safeFixed(range24.low24)}` : "-";
-    details.push(`⬆️ High ${high}  ·  ⬇️ Low ${low}`);
+    details.push(`⬆️ ${periodLabel}High ${high}  ·  ⬇️ ${periodLabel}Low ${low}`);
   }
 
   const formattedDate = data?.last_updated

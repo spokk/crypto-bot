@@ -35,7 +35,7 @@ export const registerCryptoCommand = (
         data,
         globalMetrics,
         fearAndGreed,
-        { high24: chartResult.high24, low24: chartResult.low24 },
+        { high24: chartResult.high24, low24: chartResult.low24, days: 7 },
         cgGlobal,
       );
 

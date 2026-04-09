@@ -3,7 +3,14 @@ import { chartHandler } from "./chartHandler.js";
 import { stockChartHandler } from "./stockChartHandler.js";
 import { getCompareChartConfig } from "./compareChartConfig.js";
 import { fetchChartBuffer } from "./chartUrl.js";
-import { fetchCoinGeckoMarketChart } from "../utils/http.js";
+import {
+  fetchCryptoQuote,
+  fetchFearAndGreed,
+  fetchGlobalMetrics,
+  fetchCoinGeckoGlobal,
+  fetchCoinGeckoMarketChart,
+} from "../utils/http.js";
+import { formatCryptoMessage } from "../utils/format.js";
 import { formatStockMessage } from "../utils/stockFormat.js";
 import { formatLabels, downsample } from "../utils/chartUtils.js";
 import { buildTimeframeKeyboard } from "../utils/keyboard.js";
@@ -19,15 +26,31 @@ const handleCryptoCallback = async (ctx, parts) => {
   const coin = COIN_BY_SYMBOL.get(symbol);
   if (!coin) return;
 
-  const chartResult = await chartHandler(symbol, geckoId, days);
-  const caption = ctx.callbackQuery.message?.caption ?? "";
+  const [data, chartResult, globalMetrics, fearAndGreed, cgGlobal] =
+    await Promise.all([
+      fetchCryptoQuote(symbol),
+      chartHandler(symbol, geckoId, days),
+      fetchGlobalMetrics(),
+      fetchFearAndGreed(),
+      fetchCoinGeckoGlobal(),
+    ]);
+
+  const message = formatCryptoMessage(
+    coin.name,
+    data,
+    globalMetrics,
+    fearAndGreed,
+    { high24: chartResult.high24, low24: chartResult.low24, days },
+    cgGlobal,
+  );
+
   const keyboard = buildTimeframeKeyboard(`c:${symbol}:${geckoId}`, days);
 
   await ctx.editMessageMedia(
     {
       type: "photo",
       media: new InputFile(chartResult.buffer, "chart.png"),
-      caption,
+      caption: message,
     },
     { reply_markup: keyboard },
   );
