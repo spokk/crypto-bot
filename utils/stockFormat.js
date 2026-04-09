@@ -38,7 +38,7 @@ export const formatStockMessage = (displayName, meta, range = {}) => {
   return [
     `📈 ${displayName} | 💵 $${price}`,
     "",
-    `${changeIcon} Day ${formatSignedPct(change)}`,
+    `${changeIcon} ${range.days ? `${range.days}D` : "Day"} ${formatSignedPct(change)}`,
     "",
     ...details,
     "",

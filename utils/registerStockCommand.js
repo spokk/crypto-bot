@@ -20,6 +20,7 @@ export const registerStockCommand = (
         high24: chartResult.high24,
         low24: chartResult.low24,
         periodChange: chartResult.periodChange,
+        days: 7,
       });
 
       if (chartResult?.buffer) {
