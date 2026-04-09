@@ -1,5 +1,6 @@
 import { InputFile } from "grammy";
 import { chartHandler } from "./chartHandler.js";
+import { stockChartHandler } from "./stockChartHandler.js";
 import { getCompareChartConfig } from "./compareChartConfig.js";
 import { fetchChartBuffer } from "./chartUrl.js";
 import {
@@ -10,12 +11,15 @@ import {
   fetchCoinGeckoMarketChart,
 } from "../utils/http.js";
 import { formatCryptoMessage } from "../utils/format.js";
+import { formatStockMessage } from "../utils/stockFormat.js";
 import { formatCompareMessage } from "../utils/compareFormat.js";
 import { formatLabels, downsample } from "../utils/chartUtils.js";
 import { buildTimeframeKeyboard } from "../utils/keyboard.js";
 import { cryptoList } from "../data/cryptoList.js";
+import { stockList } from "../data/stockList.js";
 
 const COIN_BY_SYMBOL = new Map(cryptoList.map((c) => [c.symbol, c]));
+const STOCK_BY_TICKER = new Map(stockList.map((s) => [s.ticker, s]));
 
 const handleCryptoCallback = async (ctx, parts) => {
   const [symbol, geckoId, daysStr] = parts;
@@ -105,6 +109,31 @@ const handleCompareCallback = async (ctx, parts) => {
   );
 };
 
+const handleStockCallback = async (ctx, parts) => {
+  const [ticker, daysStr] = parts;
+  const days = Number(daysStr);
+  const stock = STOCK_BY_TICKER.get(ticker);
+  if (!stock) return;
+
+  const chartResult = await stockChartHandler(ticker, stock.symbol, days);
+
+  const message = formatStockMessage(stock.name, chartResult.meta, {
+    high24: chartResult.high24,
+    low24: chartResult.low24,
+  });
+
+  const keyboard = buildTimeframeKeyboard(`s:${ticker}`, days);
+
+  await ctx.editMessageMedia(
+    {
+      type: "photo",
+      media: new InputFile(chartResult.buffer, "chart.png"),
+      caption: message,
+    },
+    { reply_markup: keyboard },
+  );
+};
+
 export const registerCallbackHandler = (bot) => {
   bot.on("callback_query:data", async (ctx) => {
     const data = ctx.callbackQuery.data;
@@ -115,6 +144,8 @@ export const registerCallbackHandler = (bot) => {
         await handleCryptoCallback(ctx, rest);
       } else if (type === "x") {
         await handleCompareCallback(ctx, rest);
+      } else if (type === "s") {
+        await handleStockCallback(ctx, rest);
       }
       await ctx.answerCallbackQuery();
     } catch (error) {

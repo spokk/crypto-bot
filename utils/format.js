@@ -46,7 +46,7 @@ const formatPercentage = (num) => {
   return num.toFixed(2) + "%";
 };
 
-const formatSignedPct = (value) => {
+export const formatSignedPct = (value) => {
   if (typeof value !== "number" || isNaN(value)) return "N/A";
   const sign = value >= 0 ? "+" : "";
   return `${sign}${value.toFixed(2)}%`;

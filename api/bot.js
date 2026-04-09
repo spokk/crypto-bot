@@ -10,10 +10,12 @@ import {
 } from "../utils/http.js";
 import { formatTopCryptosMessage } from "../utils/format.js";
 import { registerCryptoCommand } from "../utils/registerCryptoCommand.js";
+import { registerStockCommand } from "../utils/registerStockCommand.js";
 import { uahHandler } from "../handlers/uahHandler.js";
 import { compareHandler } from "../handlers/compareHandler.js";
 import { registerCallbackHandler } from "../handlers/callbackHandler.js";
 import { cryptoList } from "../data/cryptoList.js";
+import { stockList } from "../data/stockList.js";
 
 const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
 
@@ -21,6 +23,10 @@ bot.api.config.use(autoRetry());
 
 bot.api.setMyCommands([
   ...cryptoList.map(({ command, name }) => ({
+    command,
+    description: `Current price of ${name}`,
+  })),
+  ...stockList.map(({ command, name }) => ({
     command,
     description: `Current price of ${name}`,
   })),
@@ -34,6 +40,10 @@ bot.api.setMyCommands([
 
 cryptoList.forEach(({ command, symbol, geckoId, name }) => {
   registerCryptoCommand(bot, command, symbol, geckoId, name);
+});
+
+stockList.forEach(({ command, ticker, symbol, name }) => {
+  registerStockCommand(bot, command, ticker, symbol, name);
 });
 
 bot.command("compare", async (ctx) => {

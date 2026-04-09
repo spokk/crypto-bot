@@ -143,3 +143,18 @@ export const fetchCoinGeckoTopData = async () =>
     geckoHeaders(),
     "Top coins not found",
   );
+
+export const fetchStockChart = async (ticker, range = "5d", interval = "1h") =>
+  fetchJson(
+    buildUrl(
+      "https://query1.finance.yahoo.com",
+      `/v8/finance/chart/${ticker}`,
+      {
+        range,
+        interval,
+        includePrePost: "false",
+      },
+    ),
+    {},
+    `Stock data not found for ${ticker}`,
+  );
