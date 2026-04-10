@@ -25,7 +25,7 @@ export const chartHandler = async (symbol, geckoId, days = 7) => {
   const firstPrice = numPrices[0];
   const lastPrice = numPrices.at(-1);
   const periodChange =
-    firstPrice && lastPrice
+    firstPrice != null && lastPrice != null && firstPrice !== 0
       ? ((lastPrice - firstPrice) / firstPrice) * 100
       : null;
 

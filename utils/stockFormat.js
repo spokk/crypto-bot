@@ -42,7 +42,7 @@ export const formatStockMessage = (displayName, meta, range = {}) => {
     "",
     ...details,
     "",
-    `🏛️ ${meta?.exchangeName ?? "NYSE"}: ${meta?.symbol ?? "EPAM"}`,
+    `🏛️ ${meta?.exchangeName ?? "N/A"}: ${meta?.symbol ?? "N/A"}`,
     `🕒 ${formattedDate} (ET)`,
   ].join("\n");
 };

@@ -14,16 +14,16 @@ A Telegram bot that provides real-time cryptocurrency and stock prices, charts, 
 
 ## Commands
 
-| Command              | Description                                    |
-| -------------------- | ---------------------------------------------- |
-| `/btc`               | Bitcoin (BTC) price & chart                    |
-| `/eth`               | Ethereum (ETH) price & chart                   |
-| `/gold`              | Tether Gold (XAUt) price & chart               |
-| `/silver`            | Kinesis Silver (KAG) price & chart             |
-| `/epam`              | EPAM Systems (NYSE: EPAM) price & chart        |
-| `/compare BTC ETH`   | Compare two coins on an overlay chart          |
-| `/top`               | Market overview summary                        |
-| `/uah`               | UAH exchange rates (USD & EUR)                 |
+| Command            | Description                             |
+| ------------------ | --------------------------------------- |
+| `/btc`             | Bitcoin (BTC) price & chart             |
+| `/eth`             | Ethereum (ETH) price & chart            |
+| `/gold`            | Tether Gold (XAUt) price & chart        |
+| `/silver`          | Kinesis Silver (KAG) price & chart      |
+| `/epam`            | EPAM Systems (NYSE: EPAM) price & chart |
+| `/compare BTC ETH` | Compare two coins on an overlay chart   |
+| `/top`             | Market overview summary                 |
+| `/uah`             | UAH exchange rates (USD & EUR)          |
 
 ## Setup
 

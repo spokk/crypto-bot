@@ -65,8 +65,18 @@ export const compareHandler = async (ctx) => {
   const pricesB = sampledB.map(([, p]) => p);
   const labels = formatLabels(sampledA);
 
-  const change7dA = quoteA?.percent_change_7d;
-  const change7dB = quoteB?.percent_change_7d;
+  const firstA = pricesA[0];
+  const lastA = pricesA.at(-1);
+  const changeA =
+    firstA != null && lastA != null && firstA !== 0
+      ? ((lastA - firstA) / firstA) * 100
+      : null;
+  const firstB = pricesB[0];
+  const lastB = pricesB.at(-1);
+  const changeB =
+    firstB != null && lastB != null && firstB !== 0
+      ? ((lastB - firstB) / firstB) * 100
+      : null;
 
   const chartConfig = getCompareChartConfig(
     coinA.symbol,
@@ -74,8 +84,8 @@ export const compareHandler = async (ctx) => {
     coinB.symbol,
     pricesB,
     labels,
-    change7dA,
-    change7dB,
+    changeA,
+    changeB,
   );
 
   const chartBuffer = await fetchChartBuffer(chartConfig);

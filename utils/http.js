@@ -88,20 +88,6 @@ export const fetchCoinGeckoMarketChart = async (
     "Coin not found",
   );
 
-export const fetchCoinGeckoCoinData = async (coinId) =>
-  fetchJson(
-    buildUrl(COINGECKO_BASE_URL, `/coins/${coinId}`, {
-      localization: "false",
-      tickers: "false",
-      market_data: "true",
-      community_data: "false",
-      developer_data: "false",
-      sparkline: "false",
-    }),
-    geckoHeaders(),
-    "Coin not found",
-  );
-
 export const fetchCoinGeckoGlobal = async () =>
   fetchJson(
     buildUrl(COINGECKO_BASE_URL, "/global"),

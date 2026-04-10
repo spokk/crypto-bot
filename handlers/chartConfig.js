@@ -68,7 +68,7 @@ export const getChartConfig = (
   const avg = numericPrices.reduce((a, b) => a + b, 0) / numericPrices.length;
   const lastPrice = numericPrices.at(-1);
 
-  const range = max - min;
+  const range = max - min || 1;
   const magnitude = Math.pow(10, Math.floor(Math.log10(range)) - 1);
   const paddedMin = Math.floor((min - range * 0.05) / magnitude) * magnitude;
   const paddedMax = Math.ceil((max + range * 0.05) / magnitude) * magnitude;
@@ -76,7 +76,8 @@ export const getChartConfig = (
   const marketData = coinData?.market_data;
   const high24 = marketData?.high_24h?.usd;
   const low24 = marketData?.low_24h?.usd;
-  const periodChange = coinData?.periodChange ?? marketData?.price_change_percentage_24h;
+  const periodChange =
+    coinData?.periodChange ?? marketData?.price_change_percentage_24h;
 
   const changeStr =
     typeof periodChange === "number"

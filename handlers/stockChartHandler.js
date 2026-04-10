@@ -56,9 +56,13 @@ export const stockChartHandler = async (ticker, displaySymbol, days = 7) => {
   const low24 = validLows.length ? Math.min(...validLows) : null;
 
   const firstPrice = pricePairs.length ? pricePairs[0][1] : null;
-  const lastPrice = pricePairs.length ? pricePairs[pricePairs.length - 1][1] : null;
+  const lastPrice = pricePairs.length
+    ? pricePairs[pricePairs.length - 1][1]
+    : null;
   const periodChange =
-    firstPrice && lastPrice ? ((lastPrice - firstPrice) / firstPrice) * 100 : null;
+    firstPrice != null && lastPrice != null && firstPrice !== 0
+      ? ((lastPrice - firstPrice) / firstPrice) * 100
+      : null;
 
   const coinData = {
     market_data: {

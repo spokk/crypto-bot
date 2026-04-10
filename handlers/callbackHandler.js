@@ -78,11 +78,15 @@ const handleCompareCallback = async (ctx, parts) => {
   const firstA = pricesA[0];
   const lastA = pricesA.at(-1);
   const changeA =
-    firstA && lastA ? ((lastA - firstA) / firstA) * 100 : null;
+    firstA != null && lastA != null && firstA !== 0
+      ? ((lastA - firstA) / firstA) * 100
+      : null;
   const firstB = pricesB[0];
   const lastB = pricesB.at(-1);
   const changeB =
-    firstB && lastB ? ((lastB - firstB) / firstB) * 100 : null;
+    firstB != null && lastB != null && firstB !== 0
+      ? ((lastB - firstB) / firstB) * 100
+      : null;
 
   const chartConfig = getCompareChartConfig(
     coinA.symbol,
@@ -158,7 +162,9 @@ export const registerCallbackHandler = (bot) => {
     } catch (error) {
       if (error?.description?.includes("message is not modified")) return;
       console.error("Callback query failed:", error);
-      await ctx.answerCallbackQuery({ text: "Something went wrong." }).catch(() => {});
+      await ctx
+        .answerCallbackQuery({ text: "Something went wrong." })
+        .catch(() => {});
     }
   });
 };
