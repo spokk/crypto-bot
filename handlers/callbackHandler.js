@@ -49,7 +49,7 @@ const handleCryptoCallback = async (ctx, parts) => {
   await ctx.editMessageMedia(
     {
       type: "photo",
-      media: new InputFile(chartResult.buffer, "chart.png"),
+      media: new InputFile(chartResult.buffer, "chart.webp"),
       caption: message,
     },
     { reply_markup: keyboard },
@@ -106,7 +106,7 @@ const handleCompareCallback = async (ctx, parts) => {
   await ctx.editMessageMedia(
     {
       type: "photo",
-      media: new InputFile(chartBuffer, "chart.png"),
+      media: new InputFile(chartBuffer, "chart.webp"),
       caption,
       parse_mode: "HTML",
     },
@@ -134,7 +134,7 @@ const handleStockCallback = async (ctx, parts) => {
   await ctx.editMessageMedia(
     {
       type: "photo",
-      media: new InputFile(chartResult.buffer, "chart.png"),
+      media: new InputFile(chartResult.buffer, "chart.webp"),
       caption: message,
     },
     { reply_markup: keyboard },

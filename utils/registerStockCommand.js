@@ -27,7 +27,7 @@ export const registerStockCommand = (
       if (chartResult?.buffer) {
         const keyboard = buildTimeframeKeyboard(`s:${ticker}`);
         await ctx.replyWithPhoto(
-          new InputFile(chartResult.buffer, "chart.png"),
+          new InputFile(chartResult.buffer, "chart.webp"),
           {
             caption: message,
             disable_notification: true,

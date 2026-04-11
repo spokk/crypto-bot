@@ -100,7 +100,7 @@ export const compareHandler = async (ctx) => {
     `x:${coinA.geckoId}:${coinB.geckoId}`,
   );
 
-  await ctx.replyWithPhoto(new InputFile(chartBuffer, "chart.png"), {
+  await ctx.replyWithPhoto(new InputFile(chartBuffer, "chart.webp"), {
     caption: message,
     parse_mode: "HTML",
     disable_notification: true,

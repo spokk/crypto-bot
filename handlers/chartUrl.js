@@ -3,7 +3,8 @@ const CHART_DEFAULTS = {
   width: 1100,
   height: 550,
   backgroundColor: "#1e1e2f",
-  format: "png",
+  format: "webp",
+  devicePixelRatio: 2,
 };
 
 const jsStringify = (obj) => {

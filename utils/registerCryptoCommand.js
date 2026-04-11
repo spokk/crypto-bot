@@ -42,7 +42,7 @@ export const registerCryptoCommand = (
       if (chartResult?.buffer) {
         const keyboard = buildTimeframeKeyboard(`c:${symbol}:${geckoId}`);
         await ctx.replyWithPhoto(
-          new InputFile(chartResult.buffer, "chart.png"),
+          new InputFile(chartResult.buffer, "chart.webp"),
           {
             caption: message,
             disable_notification: true,
