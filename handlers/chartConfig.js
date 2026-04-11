@@ -146,8 +146,9 @@ export const getChartConfig = (
         maxRotation: 0,
         autoSkip: true,
         maxTicksLimit: 8,
+        includeBounds: true,
       },
-      grid: { color: THEME.grid, borderColor: "transparent" },
+      grid: { display: false },
     },
     y: buildYScale("right", paddedMin, paddedMax, true),
   };
