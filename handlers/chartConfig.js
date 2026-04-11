@@ -84,24 +84,26 @@ export const getChartConfig = (
       ? `${periodChange >= 0 ? "+" : ""}${periodChange.toFixed(2)}%`
       : "";
 
+  const isPositive = typeof periodChange !== "number" || periodChange >= 0;
+  const lineColor = isPositive ? "#00d4aa" : "#ff6b8a";
+  const fillColor = isPositive
+    ? "rgba(0, 212, 170, 0.14)"
+    : "rgba(255, 107, 138, 0.12)";
+
   const hasVolumes = volumes?.length > 0;
 
   const datasets = [
     {
       label: `${symbol.toUpperCase()} ${changeStr}`,
       data: prices,
-      fill: { target: "origin", above: THEME.fill },
-      borderColor: THEME.line,
-      pointBackgroundColor: THEME.line,
+      fill: { target: "origin", above: fillColor },
+      borderColor: lineColor,
+      pointBackgroundColor: lineColor,
       borderWidth: 2,
       tension: 0.1,
       pointRadius: 0,
       pointHoverRadius: 5,
       yAxisID: "y",
-      segment: {
-        borderColor: (ctx) =>
-          ctx.p0.parsed.y <= ctx.p1.parsed.y ? "#26a69a" : "#ef5350",
-      },
     },
     {
       label: `${days}d High / Low`,
@@ -203,16 +205,18 @@ export const getChartConfig = (
               type: "line",
               scaleID: "y",
               value: lastPrice,
-              borderColor: THEME.line,
-              borderWidth: 2,
-              borderDash: [],
+              borderColor: lineColor,
+              borderWidth: 1,
+              borderDash: [4, 3],
               label: {
                 display: true,
                 content: `Now: ${formatUsd(lastPrice)}`,
                 position: "end",
                 xAdjust: -6,
-                backgroundColor: "rgba(79, 195, 247, 0.25)",
-                color: "#4fc3f7",
+                backgroundColor: isPositive
+                  ? "rgba(0, 212, 170, 0.2)"
+                  : "rgba(255, 107, 138, 0.2)",
+                color: lineColor,
                 font: { size: 11, weight: "700", family: THEME.font },
                 padding: { x: 5, y: 3 },
                 borderRadius: 3,
