@@ -85,9 +85,9 @@ export const getChartConfig = (
       : "";
 
   const isPositive = typeof periodChange !== "number" || periodChange >= 0;
-  const lineColor = isPositive ? "#00d4aa" : "#ff6b8a";
+  const lineColor = isPositive ? "#4fc3f7" : "#ff6b8a";
   const fillColor = isPositive
-    ? "rgba(0, 212, 170, 0.14)"
+    ? "rgba(0, 150, 220, 0.16)"
     : "rgba(255, 107, 138, 0.12)";
 
   const hasVolumes = volumes?.length > 0;
@@ -144,9 +144,15 @@ export const getChartConfig = (
         color: THEME.tick,
         font: { size: 13, family: THEME.font },
         maxRotation: 0,
-        autoSkip: true,
-        maxTicksLimit: 8,
-        includeBounds: true,
+        autoSkip: false,
+      },
+      afterBuildTicks: (axis) => {
+        const n = axis.ticks.length;
+        if (n <= 8) return;
+        const keep = new Set([0, n - 1]);
+        const step = Math.floor(n / 6);
+        for (let i = step; i < n - 1; i += step) keep.add(i);
+        axis.ticks = axis.ticks.filter((_, i) => keep.has(i));
       },
       grid: { display: false },
     },
@@ -215,7 +221,7 @@ export const getChartConfig = (
                 position: "end",
                 xAdjust: -6,
                 backgroundColor: isPositive
-                  ? "rgba(0, 212, 170, 0.2)"
+                  ? "rgba(79, 195, 247, 0.2)"
                   : "rgba(255, 107, 138, 0.2)",
                 color: lineColor,
                 font: { size: 11, weight: "700", family: THEME.font },
