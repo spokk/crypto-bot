@@ -11,6 +11,7 @@ A Telegram bot that provides real-time cryptocurrency and stock prices, charts, 
 - **UAH rates** — `/uah` fetches live USD & EUR exchange rates from PrivatBank, MonoBank, and NBU with graceful degradation if any source is unavailable.
 - Dark-themed chart images rendered via QuickChart with annotation lines for high/low/avg and color-coded price segments.
 - Crypto data sourced from CoinGecko (prices, charts) and CoinMarketCap (quotes, global metrics, Fear & Greed). Stock data sourced from Yahoo Finance. UAH rates from PrivatBank, MonoBank, and NBU APIs.
+- Upstream API responses are cached in Upstash Redis (60s TTL) so burst clicks and concurrent users share fetches and stay within free-tier rate limits.
 
 ## Commands
 
@@ -35,6 +36,8 @@ A Telegram bot that provides real-time cryptocurrency and stock prices, charts, 
    - `TELEGRAM_BOT_TOKEN`
    - `COINGECKO_API_KEY`
    - `COINMARKETCAP_API_KEY`
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
 3. Set up a Telegram webhook pointing to your Vercel deployment at `/api/bot`.
 
 ## Deployment
@@ -58,6 +61,7 @@ handlers/stockChartHandler.js      — Orchestrates stock chart data fetching & 
 handlers/chartUrl.js               — Builds QuickChart URL from chart config
 handlers/uahHandler.js             — Fetches UAH exchange rates from multiple banks
 utils/http.js                      — API clients for CoinGecko, CoinMarketCap & Yahoo Finance
+utils/cache.js                     — Upstash Redis wrapper for caching upstream API responses
 utils/format.js                    — Message formatting & market overview builder
 utils/compareFormat.js             — Compare-specific message formatting
 utils/stockFormat.js               — Stock-specific message formatting

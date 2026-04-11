@@ -23,6 +23,8 @@ Telegram bot built with **grammY** + `@grammyjs/auto-retry`, deployed as a singl
 
 **External APIs**: CoinGecko (prices, chart data, global stats), CoinMarketCap (quotes, global metrics, Fear & Greed), QuickChart (chart image rendering).
 
+**Caching**: All upstream fetchers in `utils/http.js` are wrapped with `getCached` from `utils/cache.js` — Upstash Redis with 60s TTL, keys namespaced under `crypto-bot:`. Redis failures fall through to the live fetcher (graceful degradation).
+
 ## Code Style
 
 - **ES Modules** (`"type": "module"`); use `import`/`export` with `.js` extensions in relative imports
@@ -35,4 +37,4 @@ Telegram bot built with **grammY** + `@grammyjs/auto-retry`, deployed as a singl
 
 ## Environment Variables
 
-`TELEGRAM_BOT_TOKEN`, `COINGECKO_API_KEY`, `COINMARKETCAP_API_KEY` (see `.env.example`)
+`TELEGRAM_BOT_TOKEN`, `COINGECKO_API_KEY`, `COINMARKETCAP_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (see `.env.example`)

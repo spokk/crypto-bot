@@ -1,4 +1,5 @@
 import { cryptoList } from "../data/cryptoList.js";
+import { getCached } from "./cache.js";
 
 const CMC_BASE_URL = "https://pro-api.coinmarketcap.com";
 const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3";
@@ -13,21 +14,62 @@ const geckoHeaders = () => ({
   Accept: "application/json",
 });
 
+const RETRYABLE_CODES = new Set([
+  "ECONNRESET",
+  "ETIMEDOUT",
+  "ECONNREFUSED",
+  "EAI_AGAIN",
+  "UND_ERR_SOCKET",
+  "UND_ERR_CONNECT_TIMEOUT",
+  "UND_ERR_HEADERS_TIMEOUT",
+  "UND_ERR_BODY_TIMEOUT",
+]);
+
+const isRetryableError = (err) => {
+  const code = err?.code || err?.cause?.code;
+  return code && RETRYABLE_CODES.has(code);
+};
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const fetchJson = async (url, headers = {}, errorMsg = "Request failed") => {
-  const response = await fetch(url, { headers });
+  const maxAttempts = 3;
 
-  if (!response.ok) {
-    let body = "";
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      body = await response.text();
-    } catch {
-      // ignore read failure
+      const response = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(8000),
+      });
+
+      if (!response.ok) {
+        let body = "";
+        try {
+          body = await response.text();
+        } catch {
+          // ignore read failure
+        }
+
+        if (response.status >= 500 && attempt < maxAttempts) {
+          await sleep(200 * attempt);
+          continue;
+        }
+
+        throw new Error(`${errorMsg} (status ${response.status}) ${body}`);
+      }
+
+      return await response.json();
+    } catch (err) {
+      const retryable = isRetryableError(err) || err?.name === "TimeoutError";
+
+      if (retryable && attempt < maxAttempts) {
+        await sleep(200 * attempt);
+        continue;
+      }
+
+      throw err;
     }
-
-    throw new Error(`${errorMsg} (status ${response.status}) ${body}`);
   }
-
-  return response.json();
 };
 
 const fetchCMC = async (url, errorMsg) => {
@@ -49,29 +91,34 @@ const buildUrl = (base, path, params) => {
   return url;
 };
 
-export const fetchCryptoQuote = async (symbol) => {
-  const url = buildUrl(CMC_BASE_URL, "/v1/cryptocurrency/quotes/latest", {
-    symbol,
+export const fetchCryptoQuote = async (symbol) =>
+  getCached(`quote:${symbol}`, async () => {
+    const url = buildUrl(CMC_BASE_URL, "/v1/cryptocurrency/quotes/latest", {
+      symbol,
+    });
+    const data = await fetchCMC(url, `No data for symbol: ${symbol}`);
+
+    if (!data[symbol]) {
+      throw new Error(`No data for symbol: ${symbol}`);
+    }
+
+    return data[symbol].quote.USD;
   });
-  const data = await fetchCMC(url, `No data for symbol: ${symbol}`);
-
-  if (!data[symbol]) {
-    throw new Error(`No data for symbol: ${symbol}`);
-  }
-
-  return data[symbol].quote.USD;
-};
 
 export const fetchFearAndGreed = async () =>
-  fetchCMC(
-    buildUrl(CMC_BASE_URL, "/v3/fear-and-greed/latest"),
-    "No data for fear and greed index",
+  getCached("fng", () =>
+    fetchCMC(
+      buildUrl(CMC_BASE_URL, "/v3/fear-and-greed/latest"),
+      "No data for fear and greed index",
+    ),
   );
 
 export const fetchGlobalMetrics = async () =>
-  fetchCMC(
-    buildUrl(CMC_BASE_URL, "/v1/global-metrics/quotes/latest"),
-    "No data for global metrics",
+  getCached("global-metrics", () =>
+    fetchCMC(
+      buildUrl(CMC_BASE_URL, "/v1/global-metrics/quotes/latest"),
+      "No data for global metrics",
+    ),
   );
 
 export const fetchCoinGeckoMarketChart = async (
@@ -79,68 +126,81 @@ export const fetchCoinGeckoMarketChart = async (
   days = 7,
   vsCurrency = "usd",
 ) =>
-  fetchJson(
-    buildUrl(COINGECKO_BASE_URL, `/coins/${coinId}/market_chart`, {
-      vs_currency: vsCurrency,
-      days,
-    }),
-    geckoHeaders(),
-    "Coin not found",
+  getCached(`gecko-chart:${coinId}:${days}:${vsCurrency}`, () =>
+    fetchJson(
+      buildUrl(COINGECKO_BASE_URL, `/coins/${coinId}/market_chart`, {
+        vs_currency: vsCurrency,
+        days,
+      }),
+      geckoHeaders(),
+      "Coin not found",
+    ),
   );
 
 export const fetchCoinGeckoGlobal = async () =>
-  fetchJson(
-    buildUrl(COINGECKO_BASE_URL, "/global"),
-    geckoHeaders(),
-    "Global data not found",
+  getCached("gecko-global", () =>
+    fetchJson(
+      buildUrl(COINGECKO_BASE_URL, "/global"),
+      geckoHeaders(),
+      "Global data not found",
+    ),
   );
 
-export const fetchPrivatBankRates = async () => {
-  return fetchJson(
-    "https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5",
-    { Accept: "application/json" },
-    "PrivatBank rates not found",
+export const fetchPrivatBankRates = async () =>
+  getCached("privatbank", () =>
+    fetchJson(
+      "https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5",
+      { Accept: "application/json" },
+      "PrivatBank rates not found",
+    ),
   );
-};
 
 export const fetchMonoBankRates = async () =>
-  fetchJson(
-    "https://api.monobank.ua/bank/currency",
-    { Accept: "application/json" },
-    "MonoBank rates not found",
+  getCached("monobank", () =>
+    fetchJson(
+      "https://api.monobank.ua/bank/currency",
+      { Accept: "application/json" },
+      "MonoBank rates not found",
+    ),
   );
 
 export const fetchNbuExchangeRates = async () =>
-  fetchJson(
-    "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json",
-    { Accept: "application/json" },
-    "NBU exchange rates not found",
+  getCached("nbu", () =>
+    fetchJson(
+      "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json",
+      { Accept: "application/json" },
+      "NBU exchange rates not found",
+    ),
   );
 
 export const fetchCoinGeckoTopData = async () =>
-  fetchJson(
-    buildUrl(COINGECKO_BASE_URL, "/coins/markets", {
-      vs_currency: "usd",
-      ids: cryptoList.map((c) => c.geckoId).join(","),
-      order: "market_cap_desc",
-      per_page: "20",
-      sparkline: "false",
-    }),
-    geckoHeaders(),
-    "Top coins not found",
+  getCached("gecko-top", () =>
+    fetchJson(
+      buildUrl(COINGECKO_BASE_URL, "/coins/markets", {
+        vs_currency: "usd",
+        ids: cryptoList.map((c) => c.geckoId).join(","),
+        order: "market_cap_desc",
+        per_page: "20",
+        sparkline: "false",
+      }),
+      geckoHeaders(),
+      "Top coins not found",
+    ),
   );
 
 export const fetchStockChart = async (ticker, range = "5d", interval = "1h") =>
-  fetchJson(
-    buildUrl(
-      "https://query1.finance.yahoo.com",
-      `/v8/finance/chart/${ticker}`,
-      {
-        range,
-        interval,
-        includePrePost: "false",
-      },
+  getCached(`stock:${ticker}:${range}:${interval}`, () =>
+    fetchJson(
+      buildUrl(
+        "https://query1.finance.yahoo.com",
+        `/v8/finance/chart/${ticker}`,
+        {
+          range,
+          interval,
+          includePrePost: "false",
+        },
+      ),
+      {},
+      `Stock data not found for ${ticker}`,
     ),
-    {},
-    `Stock data not found for ${ticker}`,
   );
