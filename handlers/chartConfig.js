@@ -1,13 +1,13 @@
 const THEME = {
   tick: "#e0e0e0",
   label: "#f0f0f0",
-  grid: "rgba(255, 255, 255, 0.08)",
+  grid: "rgba(255, 255, 255, 0.07)",
   font: "Segoe UI, sans-serif",
   line: "#4fc3f7",
-  fill: "rgba(0, 122, 204, 0.1)",
+  fill: "rgba(0, 150, 220, 0.18)",
   tooltip: "#2c2c3a",
   annotation: "rgba(255, 255, 255, 0.45)",
-  avg: "rgba(255, 193, 7, 0.6)",
+  avg: "rgba(255, 193, 7, 0.65)",
   volume: "rgba(255, 255, 255, 0.08)",
 };
 
@@ -26,11 +26,13 @@ const buildAnnotationLine = (label, value, color, dashPattern = [6, 4]) => ({
   label: {
     display: true,
     content: `${label}: ${formatUsd(value)}`,
-    position: "start",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    position: "end",
+    xAdjust: -6,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     color: "#ffffff",
-    font: { size: 12, family: THEME.font },
-    padding: 4,
+    font: { size: 11, family: THEME.font },
+    padding: { x: 5, y: 3 },
+    borderRadius: 3,
   },
 });
 
@@ -74,8 +76,6 @@ export const getChartConfig = (
   const paddedMax = Math.ceil((max + range * 0.05) / magnitude) * magnitude;
 
   const marketData = coinData?.market_data;
-  const high24 = marketData?.high_24h?.usd;
-  const low24 = marketData?.low_24h?.usd;
   const periodChange =
     coinData?.periodChange ?? marketData?.price_change_percentage_24h;
 
@@ -148,7 +148,6 @@ export const getChartConfig = (
       grid: { color: THEME.grid, borderColor: "transparent" },
     },
     y: buildYScale("right", paddedMin, paddedMax, true),
-    y_left: buildYScale("left", paddedMin, paddedMax, false),
   };
 
   if (hasVolumes) {
@@ -160,13 +159,6 @@ export const getChartConfig = (
       grid: { display: false },
     };
   }
-
-  const periodLabel = days === 1 ? "24h" : `${days}D`;
-  const subtitleParts = [];
-  if (typeof high24 === "number")
-    subtitleParts.push(`${periodLabel} High: ${formatUsd(high24)}`);
-  if (typeof low24 === "number")
-    subtitleParts.push(`${periodLabel} Low: ${formatUsd(low24)}`);
 
   return {
     type: "line",
@@ -184,13 +176,7 @@ export const getChartConfig = (
             filter: (item) => !item.text.includes("Volume"),
           },
         },
-        title: {
-          display: subtitleParts.length > 0,
-          text: subtitleParts.join("  |  "),
-          color: "#e0e0e0",
-          font: { size: 15, weight: "600", family: THEME.font },
-          padding: { top: 0, bottom: 4 },
-        },
+        title: { display: false },
         tooltip: {
           backgroundColor: THEME.tooltip,
           titleColor: "#ffffff",
@@ -213,16 +199,29 @@ export const getChartConfig = (
               THEME.avg,
               [4, 4],
             ),
-            lastPriceLine: buildAnnotationLine(
-              "Now",
-              lastPrice,
-              THEME.line,
-              [3, 3],
-            ),
+            lastPriceLine: {
+              type: "line",
+              scaleID: "y",
+              value: lastPrice,
+              borderColor: THEME.line,
+              borderWidth: 2,
+              borderDash: [],
+              label: {
+                display: true,
+                content: `Now: ${formatUsd(lastPrice)}`,
+                position: "end",
+                xAdjust: -6,
+                backgroundColor: "rgba(79, 195, 247, 0.25)",
+                color: "#4fc3f7",
+                font: { size: 11, weight: "700", family: THEME.font },
+                padding: { x: 5, y: 3 },
+                borderRadius: 3,
+              },
+            },
           },
         },
       },
-      layout: { padding: { top: 2, bottom: 6, left: 12, right: 12 } },
+      layout: { padding: { top: 0, bottom: 0, left: 0, right: 0 } },
       scales,
     },
   };
