@@ -144,15 +144,8 @@ export const getChartConfig = (
         color: THEME.tick,
         font: { size: 13, family: THEME.font },
         maxRotation: 0,
-        autoSkip: false,
-      },
-      afterBuildTicks: (axis) => {
-        const n = axis.ticks.length;
-        if (n <= 8) return;
-        const keep = new Set([0, n - 1]);
-        const step = Math.floor(n / 6);
-        for (let i = step; i < n - 1; i += step) keep.add(i);
-        axis.ticks = axis.ticks.filter((_, i) => keep.has(i));
+        autoSkip: true,
+        maxTicksLimit: 7,
       },
       grid: { display: false },
     },
